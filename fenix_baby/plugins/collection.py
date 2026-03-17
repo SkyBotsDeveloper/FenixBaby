@@ -98,7 +98,7 @@ async def check_drops(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         active_drops[chat.id] = name.lower()
         
-        caption = f"ðŸ‘§ <b>A NEW WAIFU APPEARED!</b>\n\nGuess her name to catch her!\n<i>(Hint: {name[0]}...{name[-1]})</i>"
+        caption = f"👧 <b>A NEW WAIFU APPEARED!</b>\n\nGuess her name to catch her!\n<i>(Hint: {name[0]}...{name[-1]})</i>"
         
         try:
             # Atomic operation: Photo + Caption together
@@ -155,22 +155,22 @@ async def collect_waifu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         users_collection.update_one({"user_id": user['user_id']}, {"$push": {"waifus": waifu}})
         
         await msg.reply_text(
-            f"ðŸŽŠ <b>Caught!</b> {get_mention(user)} got <b>{correct.title()}</b>!\nðŸŒŸ <b>Rarity:</b> {rarity}",
+            f"🎊 <b>Caught!</b> {get_mention(user)} got <b>{correct.title()}</b>!\n🌟 <b>Rarity:</b> {rarity}",
             parse_mode=ParseMode.HTML
         )
     else:
         # Only feedback if they were clearly trying to guess (reply or command)
-        await msg.reply_text("âŒ Wrong guess! Try again.")
+        await msg.reply_text("❌ Wrong guess! Try again.")
 
 async def catch_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Guess waifu from /catch command."""
     if not update.effective_chat or not update.effective_message or not update.effective_user: return
     chat = update.effective_chat
     if chat and chat.id not in active_drops:
-        return await update.effective_message.reply_text("âŒ No active catch to guess!")
+        return await update.effective_message.reply_text("❌ No active catch to guess!")
     
     if not context.args:
-        return await update.effective_message.reply_text("ðŸ“ Usage: /catch [name]")
+        return await update.effective_message.reply_text("📝 Usage: /catch [name]")
         
     guess = " ".join(context.args).lower().strip()
     correct = active_drops[chat.id]
@@ -184,9 +184,9 @@ async def catch_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         users_collection.update_one({"user_id": user['user_id']}, {"$push": {"waifus": waifu}})
         
         await update.effective_message.reply_text(
-            f"ðŸŽ¯ <b>Perfect Guess!</b>\n\nðŸ‘¤ {get_mention(user)} caught <b>{correct.title()}</b>!\nðŸŒŸ <b>Rarity:</b> {rarity}",
+            f"🎯 <b>Perfect Guess!</b>\n\n👤 {get_mention(user)} caught <b>{correct.title()}</b>!\n🌟 <b>Rarity:</b> {rarity}",
             parse_mode=ParseMode.HTML
         )
     else:
-        await update.effective_message.reply_text("âŒ Wrong name! Try again.")
+        await update.effective_message.reply_text("❌ Wrong name! Try again.")
 

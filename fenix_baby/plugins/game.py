@@ -31,23 +31,23 @@ from fenix_baby.services.ai_client import ask_ai_raw
 from fenix_baby.ui.components import Templates, Buttons
 
 KILL_NARRATIVES = [
-    "P1 ne P2 ko thappad maar ke bhaga diya! ðŸ’€",
-    "P1 ne P2 ko chappal se maara! ðŸ©´ðŸ’¥",
-    "P1 ne P2 ko uda diya! ðŸ”«ðŸ’¨",
-    "P1 ne P2 ka game khatam kar diya! â˜ ï¸",
-    "P1 ne P2 ko dharti mein gada diya! ðŸª¦",
-    "P1 ne P2 ka kaam tamaam kar diya! ðŸ’€",
-    "P1 ne P2 ko seedha swarg bhej diya! ðŸ˜‡",
-    "P1 ne P2 ko dhool chata di! ðŸ’¨",
+    "P1 ne P2 ko thappad maar ke bhaga diya! 💀",
+    "P1 ne P2 ko chappal se maara! 🩴💥",
+    "P1 ne P2 ko uda diya! 🔫💨",
+    "P1 ne P2 ka game khatam kar diya! ☠️",
+    "P1 ne P2 ko dharti mein gada diya! 🪦",
+    "P1 ne P2 ka kaam tamaam kar diya! 💀",
+    "P1 ne P2 ko seedha swarg bhej diya! 😇",
+    "P1 ne P2 ko dhool chata di! 💨",
 ]
 
 ROB_NARRATIVES = [
-    "P1 ne P2 ki jeb kaati! ðŸ’°",
-    "P1 ne P2 ka wallet chura liya! ðŸ‘›",
-    "P1 ne P2 ko loot liya bhai! ðŸ¤‘",
-    "P1 ne P2 ka paisa gayab kar diya! ðŸ’¸",
-    "P1 ne P2 ko kangaal bana diya! ðŸ“‰",
-    "P1 ne P2 ki tijori khali kar di! ðŸ¦",
+    "P1 ne P2 ki jeb kaati! 💰",
+    "P1 ne P2 ka wallet chura liya! 👛",
+    "P1 ne P2 ko loot liya bhai! 🤑",
+    "P1 ne P2 ka paisa gayab kar diya! 💸",
+    "P1 ne P2 ko kangaal bana diya! 📉",
+    "P1 ne P2 ki tijori khali kar di! 🏦",
 ]
 
 async def get_narrative(action_type, attacker_mention, target_mention):
@@ -83,22 +83,22 @@ async def kill(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if not target or not update or not update.effective_message:
         if update and update.effective_message:
-            await update.effective_message.reply_text(error if error else "âš ï¸ <b>Usage:</b> <code>/kill @user</code>", parse_mode=ParseMode.HTML)
+            await update.effective_message.reply_text(error if error else "⚠️ <b>Usage:</b> <code>/kill @user</code>", parse_mode=ParseMode.HTML)
         return
 
-    if target['user_id'] == OWNER_ID: return await update.effective_message.reply_text("ðŸ‘‘ <b>Immortal God!</b> Master is the source of all life. You cannot kill him.", parse_mode=ParseMode.HTML)
+    if target['user_id'] == OWNER_ID: return await update.effective_message.reply_text("👑 <b>Immortal God!</b> Master is the source of all life. You cannot kill him.", parse_mode=ParseMode.HTML)
     
     # Protection check moved up to be the absolute first check after basic existence
     expiry = get_active_protection(target)
     if expiry:
         rem = expiry - datetime.utcnow()
-        return await update.effective_message.reply_text(f"ðŸ›¡ï¸ <b>Blocked!</b> Target is under protection for <code>{format_time(rem)}</code>. No one can touch them!", parse_mode=ParseMode.HTML)
+        return await update.effective_message.reply_text(f"🛡️ <b>Blocked!</b> Target is under protection for <code>{format_time(rem)}</code>. No one can touch them!", parse_mode=ParseMode.HTML)
 
     if attacker['user_id'] != OWNER_ID:
-        if attacker['status'] == 'dead': return await update.effective_message.reply_text("ðŸ’€ You are dead.", parse_mode=ParseMode.HTML)
+        if attacker['status'] == 'dead': return await update.effective_message.reply_text("💀 You are dead.", parse_mode=ParseMode.HTML)
     
-    if target['status'] == 'dead': return await update.effective_message.reply_text("âš°ï¸ Already dead.", parse_mode=ParseMode.HTML)
-    if target['user_id'] == attacker['user_id']: return await update.effective_message.reply_text("ðŸ¤” No.", parse_mode=ParseMode.HTML)
+    if target['status'] == 'dead': return await update.effective_message.reply_text("⚰️ Already dead.", parse_mode=ParseMode.HTML)
+    if target['user_id'] == attacker['user_id']: return await update.effective_message.reply_text("🤔 No.", parse_mode=ParseMode.HTML)
 
     # --- FAIR PLAY: MAX 1 WEAPON BUFF ---
     base_reward = random.randint(100, 200)
@@ -114,7 +114,7 @@ async def kill(update: Update, context: ContextTypes.DEFAULT_TYPE):
     flex_items = [i for i in target_inv if i['type'] == 'flex']
     if flex_items:
         users_collection.update_one({"user_id": target["user_id"]}, {"$pull": {"inventory": {"type": "flex"}}})
-        flex_burn_text = f"\nðŸ”¥ <b>Burned:</b> {len(flex_items)} Flex Items destroyed!"
+        flex_burn_text = f"\n🔥 <b>Burned:</b> {len(flex_items)} Flex Items destroyed!"
 
     users_collection.update_one({"user_id": target["user_id"]}, {"$set": {"status": "dead", "death_time": datetime.utcnow()}})
     users_collection.update_one({"user_id": attacker["user_id"]}, {"$inc": {"kills": 1, "balance": final_reward}})
@@ -122,16 +122,16 @@ async def kill(update: Update, context: ContextTypes.DEFAULT_TYPE):
     narration = await get_narrative("kill", get_mention(attacker), get_mention(target))
     buff_text = f" <i>(+{int(buff*100)}% {best_w['name']})</i>" if best_w else ""
 
-    kill_result = f"ðŸ”ª <b>á´‹ÉªÊŸÊŸá´‡á´…!</b> {narration} ðŸ’° <b>+{format_money(final_reward)}</b>"
+    kill_result = f"🔪 <b>killed!</b> {narration} 💰 <b>+{format_money(final_reward)}</b>"
 
     keyboard = InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("ðŸ›¡ï¸ Ê™á´œÊ á´˜Ê€á´á´›á´‡á´„á´›Éªá´É´", callback_data="game_protect_info"),
-            InlineKeyboardButton("ðŸ’€ á´‹ÉªÊŸÊŸ á´€É¢á´€ÉªÉ´", callback_data="game_kill_info"),
+            InlineKeyboardButton("🛡️ buy protection", callback_data="game_protect_info"),
+            InlineKeyboardButton("💀 kill again", callback_data="game_kill_info"),
         ],
         [
-            InlineKeyboardButton("ðŸ’° á´Ê Ê™á´€ÊŸá´€É´á´„á´‡", callback_data="quick_bal"),
-            InlineKeyboardButton("ðŸ  á´á´‡É´á´œ", callback_data="return_start"),
+            InlineKeyboardButton("💰 my balance", callback_data="quick_bal"),
+            InlineKeyboardButton("🏠 menu", callback_data="return_start"),
         ]
     ])
 
@@ -143,27 +143,27 @@ async def rob(update: Update, context: ContextTypes.DEFAULT_TYPE):
     attacker = ensure_user_exists(update.effective_user)
     if not attacker: return
     if attacker['user_id'] == OWNER_ID:
-        return await update.effective_message.reply_text("Master, everything already belongs to you. No need to rob! ðŸ‘‘")
+        return await update.effective_message.reply_text("Master, everything already belongs to you. No need to rob! 👑")
 
-    if not context.args: return await update.effective_message.reply_text("âš ï¸ <b>Usage:</b> <code>/rob [amount] @user</code>", parse_mode=ParseMode.HTML)
+    if not context.args: return await update.effective_message.reply_text("⚠️ <b>Usage:</b> <code>/rob [amount] @user</code>", parse_mode=ParseMode.HTML)
     
     try: amount = int(context.args[0])
-    except: return await update.effective_message.reply_text("âš ï¸ Invalid Amount", parse_mode=ParseMode.HTML)
+    except: return await update.effective_message.reply_text("⚠️ Invalid Amount", parse_mode=ParseMode.HTML)
     target_arg = context.args[1] if len(context.args) > 1 else None
     target, error = await resolve_target(update, context, specific_arg=target_arg)
-    if not target: return await update.effective_message.reply_text(error or "âš ï¸ Tag victim", parse_mode=ParseMode.HTML)
+    if not target: return await update.effective_message.reply_text(error or "⚠️ Tag victim", parse_mode=ParseMode.HTML)
 
-    if target['user_id'] == OWNER_ID: return await update.effective_message.reply_text("ðŸ‘‘ <b>Immortal God!</b> Master's wealth is infinite and his protection is absolute.", parse_mode=ParseMode.HTML)
-    if attacker['status'] == 'dead': return await update.effective_message.reply_text("ðŸ’€ Dead.", parse_mode=ParseMode.HTML)
-    if target['user_id'] == attacker['user_id']: return await update.effective_message.reply_text("ðŸ¤¦â€â™‚ï¸ No.", parse_mode=ParseMode.HTML)
+    if target['user_id'] == OWNER_ID: return await update.effective_message.reply_text("👑 <b>Immortal God!</b> Master's wealth is infinite and his protection is absolute.", parse_mode=ParseMode.HTML)
+    if attacker['status'] == 'dead': return await update.effective_message.reply_text("💀 Dead.", parse_mode=ParseMode.HTML)
+    if target['user_id'] == attacker['user_id']: return await update.effective_message.reply_text("🤦‍♂️ No.", parse_mode=ParseMode.HTML)
     
     # Protection check moved up to be the absolute first check after basic existence
     expiry = get_active_protection(target)
     if expiry:
         rem = expiry - datetime.utcnow()
-        return await update.effective_message.reply_text(f"ðŸ›¡ï¸ <b>Shielded!</b> Safe for <code>{format_time(rem)}</code>. No one can rob them!", parse_mode=ParseMode.HTML)
+        return await update.effective_message.reply_text(f"🛡️ <b>Shielded!</b> Safe for <code>{format_time(rem)}</code>. No one can rob them!", parse_mode=ParseMode.HTML)
 
-    if target['balance'] < amount: return await update.effective_message.reply_text("ðŸ“‰ Too poor.", parse_mode=ParseMode.HTML)
+    if target['balance'] < amount: return await update.effective_message.reply_text("📉 Too poor.", parse_mode=ParseMode.HTML)
 
     # --- FAIR PLAY: MAX 1 ARMOR BLOCK ---
     armors = [i for i in target.get('inventory', []) if i['type'] == 'armor']
@@ -171,26 +171,26 @@ async def rob(update: Update, context: ContextTypes.DEFAULT_TYPE):
     block_chance = best_a['buff'] if best_a else 0
 
     if random.random() < block_chance:
-        return await update.effective_message.reply_text(f"ðŸ›¡ï¸ <b>BLOCKED!</b> {get_mention(target)} used {best_a['name']} to stop you!", parse_mode=ParseMode.HTML)
+        return await update.effective_message.reply_text(f"🛡️ <b>BLOCKED!</b> {get_mention(target)} used {best_a['name']} to stop you!", parse_mode=ParseMode.HTML)
 
     # Execute
     users_collection.update_one({"user_id": target["user_id"]}, {"$inc": {"balance": -amount}})
     users_collection.update_one({"user_id": attacker["user_id"]}, {"$inc": {"balance": amount}})
     
     narration = await get_narrative("rob", get_mention(attacker), get_mention(target))
-    header_title = "É¢Ê€á´€á´ á´‡ Ê€á´Ê™Ê™á´‡Ê€Ê" if target['status'] == 'dead' else "Ê€á´Ê™Ê™á´‡Ê€Ê á´„á´á´á´˜ÊŸá´‡á´›á´‡"
-    header_emoji = "ðŸ§Ÿ" if target['status'] == 'dead' else "ðŸ’°"
+    header_title = "grave robbery" if target['status'] == 'dead' else "robbery complete"
+    header_emoji = "🧟" if target['status'] == 'dead' else "💰"
 
-    rob_result = f"ðŸ’° <b>sá´›á´ÊŸá´‡É´!</b> {narration} ðŸ’¸ <b>+{format_money(amount)}</b>"
+    rob_result = f"💰 <b>stolen!</b> {narration} 💸 <b>+{format_money(amount)}</b>"
 
     keyboard = InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("ðŸ’° Ê€á´Ê™ á´€É¢á´€ÉªÉ´", callback_data="game_rob_info"),
-            InlineKeyboardButton("ðŸ”ª á´‹ÉªÊŸÊŸ", callback_data="game_kill_info"),
+            InlineKeyboardButton("💰 rob again", callback_data="game_rob_info"),
+            InlineKeyboardButton("🔪 kill", callback_data="game_kill_info"),
         ],
         [
-            InlineKeyboardButton("ðŸ’° á´Ê Ê™á´€ÊŸá´€É´á´„á´‡", callback_data="quick_bal"),
-            InlineKeyboardButton("ðŸ  á´á´‡É´á´œ", callback_data="return_start"),
+            InlineKeyboardButton("💰 my balance", callback_data="quick_bal"),
+            InlineKeyboardButton("🏠 menu", callback_data="return_start"),
         ]
     ])
 
@@ -203,18 +203,18 @@ async def protect(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not sender: return
     if not context.args:
         protect_help = f"""
-â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-â•‘  ðŸ›¡ï¸ <b>á´˜Ê€á´á´›á´‡á´„á´›Éªá´É´ sÊœÉªá´‡ÊŸá´…</b>  â•‘
-â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
-â•‘ Keep safe from kills & robs!
-â• â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â•£
-â•‘ ðŸ“¦ <b>1 Day:</b> <code>{format_money(PROTECT_1D_COST)}</code>
-â•‘ ðŸ“¦ <b>2 Days:</b> <code>{format_money(PROTECT_2D_COST)}</code>
-â• â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â•£
-â•‘ ðŸ“ <b>Usage:</b>
-â•‘ <code>/protect 1d</code> - Self
-â•‘ <code>/protect 1d @user</code> - Partner
-â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•"""
+╔═══════════════════════╗
+║  🛡️ <b>protection shield</b>  ║
+╠═══════════════════════╣
+║ Keep safe from kills & robs!
+╠───────────────────────╣
+║ 📦 <b>1 Day:</b> <code>{format_money(PROTECT_1D_COST)}</code>
+║ 📦 <b>2 Days:</b> <code>{format_money(PROTECT_2D_COST)}</code>
+╠───────────────────────╣
+║ 📝 <b>Usage:</b>
+║ <code>/protect 1d</code> - Self
+║ <code>/protect 1d @user</code> - Partner
+╚═══════════════════════╝"""
         return await update.effective_message.reply_text(protect_help, parse_mode=ParseMode.HTML)
 
     dur = context.args[0].lower()
@@ -235,11 +235,11 @@ async def protect(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if expiry:
         rem = expiry - datetime.utcnow()
         return await update.effective_message.reply_text(f"""
-â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-â•‘  ðŸ›¡ï¸ <b>á´€ÊŸÊ€á´‡á´€á´…Ê sá´€Ò“á´‡!</b>  â•‘
-â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
-â•‘ â° <b>Time Left:</b> <code>{format_time(rem)}</code>
-â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•""", parse_mode=ParseMode.HTML)
+╔═══════════════════════╗
+║  🛡️ <b>already safe!</b>  ║
+╠═══════════════════════╣
+║ ⏰ <b>Time Left:</b> <code>{format_time(rem)}</code>
+╚═══════════════════════╝""", parse_mode=ParseMode.HTML)
     
     if sender['balance'] < cost: return await update.effective_message.reply_text(Templates.error_box(f"Need {format_money(cost)}"), parse_mode=ParseMode.HTML)
 
@@ -251,29 +251,29 @@ async def protect(update: Update, context: ContextTypes.DEFAULT_TYPE):
     partner_bonus = ""
     if partner_id:
         users_collection.update_one({"user_id": partner_id}, {"$set": {"protection_expiry": expiry_dt}})
-        partner_bonus = "\nâ•‘ ðŸ’ž <b>Partner Also Protected!</b>"
+        partner_bonus = "\n║ 💞 <b>Partner Also Protected!</b>"
 
     if is_self:
         result = f"""
-â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-â•‘  ðŸ›¡ï¸ <b>sÊœÉªá´‡ÊŸá´… á´€á´„á´›Éªá´ á´‡!</b>  â•‘
-â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
-â•‘ ðŸ”’ You are protected!
-â•‘ â° <b>Duration:</b> <code>{days} day(s)</code>{partner_bonus}
-â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•"""
+╔═══════════════════════╗
+║  🛡️ <b>shield active!</b>  ║
+╠═══════════════════════╣
+║ 🔒 You are protected!
+║ ⏰ <b>Duration:</b> <code>{days} day(s)</code>{partner_bonus}
+╚═══════════════════════╝"""
     else:
         result = f"""
-â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-â•‘  ðŸ›¡ï¸ <b>É¢á´œá´€Ê€á´…Éªá´€É´!</b>  â•‘
-â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
-â•‘ ðŸ”’ Protected {get_mention(target)}
-â•‘ â° <b>Duration:</b> <code>{days} day(s)</code>{partner_bonus}
-â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•"""
+╔═══════════════════════╗
+║  🛡️ <b>guardian!</b>  ║
+╠═══════════════════════╣
+║ 🔒 Protected {get_mention(target)}
+║ ⏰ <b>Duration:</b> <code>{days} day(s)</code>{partner_bonus}
+╚═══════════════════════╝"""
 
     keyboard = InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("ðŸ’° Ê™á´€ÊŸá´€É´á´„á´‡", callback_data="quick_bal"),
-            InlineKeyboardButton("ðŸ  á´á´‡É´á´œ", callback_data="return_start"),
+            InlineKeyboardButton("💰 balance", callback_data="quick_bal"),
+            InlineKeyboardButton("🏠 menu", callback_data="return_start"),
         ]
     ])
     await update.effective_message.reply_text(result, parse_mode=ParseMode.HTML, reply_markup=keyboard)
@@ -293,7 +293,7 @@ async def revive(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if reviver['user_id'] == OWNER_ID:
         users_collection.update_one({"user_id": target["user_id"]}, {"$set": {"status": "alive", "death_time": None}})
         target_text = "You" if target['user_id'] == reviver['user_id'] else get_mention(target)
-        return await update.effective_message.reply_text(f"âœ¨ <b>Ê€á´‡á´ Éªá´ á´‡á´…!</b>\n\nðŸ’– {target_text} are back by Master's grace! ðŸ‘‘", parse_mode=ParseMode.HTML)
+        return await update.effective_message.reply_text(f"✨ <b>revived!</b>\n\n💖 {target_text} are back by Master's grace! 👑", parse_mode=ParseMode.HTML)
 
     if reviver['balance'] < REVIVE_COST: 
         return await update.effective_message.reply_text(Templates.error_box(f"Need {format_money(REVIVE_COST)}"), parse_mode=ParseMode.HTML)
@@ -306,17 +306,17 @@ async def revive(update: Update, context: ContextTypes.DEFAULT_TYPE):
     target_text = "You" if is_self else get_mention(target)
 
     result = f"""
-â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-â•‘  ðŸ’– <b>Ê€á´‡á´ Éªá´ á´‡á´…!</b>  â•‘
-â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
-â•‘ âœ¨ {target_text} are back!
-â•‘ ðŸ’µ <b>Cost:</b> <code>{format_money(REVIVE_COST)}</code>
-â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•"""
+╔═══════════════════════╗
+║  💖 <b>revived!</b>  ║
+╠═══════════════════════╣
+║ ✨ {target_text} are back!
+║ 💵 <b>Cost:</b> <code>{format_money(REVIVE_COST)}</code>
+╚═══════════════════════╝"""
 
     keyboard = InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("ðŸ›¡ï¸ Ê™á´œÊ á´˜Ê€á´á´›á´‡á´„á´›Éªá´É´", callback_data="game_protect_info"),
-            InlineKeyboardButton("ðŸ  á´á´‡É´á´œ", callback_data="return_start"),
+            InlineKeyboardButton("🛡️ buy protection", callback_data="game_protect_info"),
+            InlineKeyboardButton("🏠 menu", callback_data="return_start"),
         ]
     ])
     await update.effective_message.reply_text(result, parse_mode=ParseMode.HTML, reply_markup=keyboard)

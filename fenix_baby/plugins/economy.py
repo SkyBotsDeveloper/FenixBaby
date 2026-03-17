@@ -37,7 +37,7 @@ async def inventory_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
     
     item = next((i for i in SHOP_ITEMS if i['id'] == item_id), None)
     if not item: 
-        await query.answer("âŒ Item data not found.", show_alert=True)
+        await query.answer("❌ Item data not found.", show_alert=True)
         return
 
     rarity_text = "Common"
@@ -46,10 +46,10 @@ async def inventory_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
     if item['price'] > 100000000: rarity_text = "Godly"
 
     text = (
-        f"ðŸ’Ž ð…ð¥ðžð± ðˆð­ðžð¦: {item['name']}\n"
-        f"ðŸ’° ð•ðšð¥ð®ðž: {format_money(item['price'])}\n"
-        f"ðŸŒŸ ð‘ðšð«ð¢ð­ð²: {rarity_text}\n"
-        f"ðŸ›¡ï¸ ð’ð­ðšð­ð®ð¬: Safe (Unless you die!)"
+        f"💎 Flex Item: {item['name']}\n"
+        f"💰 Value: {format_money(item['price'])}\n"
+        f"🌟 Rarity: {rarity_text}\n"
+        f"🛡️ Status: Safe (Unless you die!)"
     )
     await query.answer(text, show_alert=True)
 
@@ -64,24 +64,24 @@ async def register(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     # --- FIX: PM ONLY CHECK ---
     if chat.type != ChatType.PRIVATE:
-        kb = InlineKeyboardMarkup([[InlineKeyboardButton("ðŸš€ Register Here", url=f"https://t.me/{context.bot.username}?start=register")]])
+        kb = InlineKeyboardMarkup([[InlineKeyboardButton("🚀 Register Here", url=f"https://t.me/{context.bot.username}?start=register")]])
         return await update.effective_message.reply_text(
-            "âŒ <b>Fenix Baby!</b> You cannot register in a group!\n"
+            "❌ <b>Fenix Baby!</b> You cannot register in a group!\n"
             "<i>Go to my PM to create your wallet securely.</i>",
             parse_mode=ParseMode.HTML,
             reply_markup=kb
         )
 
     if users_collection.find_one({"user_id": user.id}): 
-        return await update.effective_message.reply_text(f"âœ¨ <b>Ara?</b> {get_mention(user)}, you are already registered!", parse_mode=ParseMode.HTML)
+        return await update.effective_message.reply_text(f"✨ <b>Ara?</b> {get_mention(user)}, you are already registered!", parse_mode=ParseMode.HTML)
     
     ensure_user_exists(user)
     users_collection.update_one({"user_id": user.id}, {"$set": {"balance": REGISTER_BONUS}})
     
     await update.effective_message.reply_text(
-        f"ðŸŽ‰ <b>Yayy!</b> {get_mention(user)} Registered!\n"
-        f"ðŸŽ <b>Welcome Bonus:</b> <code>+{format_money(REGISTER_BONUS)}</code>\n"
-        f"â„¹ï¸ <i>Use /help to learn how to play!</i>", 
+        f"🎉 <b>Yayy!</b> {get_mention(user)} Registered!\n"
+        f"🎁 <b>Welcome Bonus:</b> <code>+{format_money(REGISTER_BONUS)}</code>\n"
+        f"ℹ️ <i>Use /help to learn how to play!</i>", 
         parse_mode=ParseMode.HTML
     )
 
@@ -94,7 +94,7 @@ async def claim(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     # --- FIX: GROUP ONLY CHECK ---
     if chat.type == ChatType.PRIVATE:
-        return await update.effective_message.reply_text("âš ï¸ <b>Fenix Baby!</b> This command is for Group Bonuses only.", parse_mode=ParseMode.HTML)
+        return await update.effective_message.reply_text("⚠️ <b>Fenix Baby!</b> This command is for Group Bonuses only.", parse_mode=ParseMode.HTML)
     
     ensure_user_exists(user)
     
@@ -104,13 +104,13 @@ async def claim(update: Update, context: ContextTypes.DEFAULT_TYPE):
     group_doc = groups_collection.find_one({"chat_id": chat.id})
     
     if group_doc and group_doc.get("claimed"): 
-        return await update.effective_message.reply_text("âŒ <b>Too late!</b> This group bonus has already been claimed.", parse_mode=ParseMode.HTML)
+        return await update.effective_message.reply_text("❌ <b>Too late!</b> This group bonus has already been claimed.", parse_mode=ParseMode.HTML)
     
     # Check Member Count
     try: 
         count = await context.bot.get_chat_member_count(chat.id)
     except: 
-        return await update.effective_message.reply_text("âš ï¸ I need <b>Admin Rights</b> to verify member count!", parse_mode=ParseMode.HTML)
+        return await update.effective_message.reply_text("⚠️ I need <b>Admin Rights</b> to verify member count!", parse_mode=ParseMode.HTML)
 
     if count < MIN_CLAIM_MEMBERS:
         # Generate Roast
@@ -118,12 +118,12 @@ async def claim(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "You are a savage but funny Hinglish roaster.",
             f"Roast {user.first_name} for claiming in a group with only {count} members. Needs {MIN_CLAIM_MEMBERS}.",
         )
-        final_roast = roast if roast else "Itna sannaata kyu hai bhai? ðŸ˜‚"
+        final_roast = roast if roast else "Itna sannaata kyu hai bhai? 😂"
         
         return await update.effective_message.reply_text(
-            f"âŒ <b>Claim Failed!</b>\n\n"
-            f"ðŸ“‰ <b>Members:</b> {count}/{MIN_CLAIM_MEMBERS}\n"
-            f"ðŸ”¥ <b>Roast:</b> <i>{stylize_text(final_roast)}</i>", 
+            f"❌ <b>Claim Failed!</b>\n\n"
+            f"📉 <b>Members:</b> {count}/{MIN_CLAIM_MEMBERS}\n"
+            f"🔥 <b>Roast:</b> <i>{stylize_text(final_roast)}</i>", 
             parse_mode=ParseMode.HTML
         )
     
@@ -132,10 +132,10 @@ async def claim(update: Update, context: ContextTypes.DEFAULT_TYPE):
     groups_collection.update_one({"chat_id": chat.id}, {"$set": {"claimed": True}})
     
     await update.effective_message.reply_text(
-        f"ðŸ’Ž <b>ð‚ð¥ðšð¢ð¦ ð’ð®ðœðœðžð¬ð¬ðŸð®ð¥!</b>\n\n"
-        f"ðŸ‘¤ <b>Claimer:</b> {get_mention(user)}\n"
-        f"ðŸ’° <b>Reward:</b> <code>+{format_money(CLAIM_BONUS)}</code>\n"
-        f"ðŸ† <i>Congratulations! You were the fastest.</i>", 
+        f"💎 <b>Claim Successful!</b>\n\n"
+        f"👤 <b>Claimer:</b> {get_mention(user)}\n"
+        f"💰 <b>Reward:</b> <code>+{format_money(CLAIM_BONUS)}</code>\n"
+        f"🏆 <i>Congratulations! You were the fastest.</i>", 
         parse_mode=ParseMode.HTML
     )
 
@@ -146,14 +146,14 @@ async def balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not target and error == "No target": target = ensure_user_exists(update.effective_user)
     if not target:
         if update.effective_message:
-            await update.effective_message.reply_text(error or "âš ï¸ Error", parse_mode=ParseMode.HTML)
+            await update.effective_message.reply_text(error or "⚠️ Error", parse_mode=ParseMode.HTML)
         return
 
     if target['user_id'] == OWNER_ID:
-        return await update.effective_message.reply_text("ðŸ‘‘ <b>Immortal God!</b> Master owns everything.", parse_mode=ParseMode.HTML)
+        return await update.effective_message.reply_text("👑 <b>Immortal God!</b> Master owns everything.", parse_mode=ParseMode.HTML)
 
     rank = users_collection.count_documents({"balance": {"$gt": target["balance"]}}) + 1
-    status = "ðŸ’– Alive" if target['status'] == 'alive' else "ðŸ’€ Dead"
+    status = "💖 Alive" if target['status'] == 'alive' else "💀 Dead"
     
     inventory = target.get('inventory', [])
     weapons = [i for i in inventory if i['type'] == 'weapon']
@@ -177,12 +177,12 @@ async def balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
     reply_markup = InlineKeyboardMarkup(kb) if kb else None
 
     msg = (
-        f"ðŸ‘¤ {get_mention(target)} | ðŸ‘› <b>{format_money(target['balance'])}</b>\n"
-        f"ðŸ† #{rank} | â¤ï¸ {status} | âš”ï¸ {target['kills']}\n"
-        f"ðŸ—¡ï¸ {w_text} / {a_text}"
+        f"👤 {get_mention(target)} | 👛 <b>{format_money(target['balance'])}</b>\n"
+        f"🏆 #{rank} | ❤️ {status} | ⚔️ {target['kills']}\n"
+        f"🗡️ {w_text} / {a_text}"
     )
     
-    if flex_items: msg += f"\nðŸ’Ž Flex: {len(flex_items)} items"
+    if flex_items: msg += f"\n💎 Flex: {len(flex_items)} items"
     
     await update.effective_message.reply_text(msg, parse_mode=ParseMode.HTML, reply_markup=reply_markup)
 
@@ -192,16 +192,16 @@ async def ranking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     rich = users_collection.find().sort("balance", -1).limit(10)
     kills = users_collection.find().sort("kills", -1).limit(10)
 
-    def get_badge(i): return ["ðŸ¥‡","ðŸ¥ˆ","ðŸ¥‰"][i-1] if i<=3 else f"<code>{i}.</code>"
+    def get_badge(i): return ["🥇","🥈","🥉"][i-1] if i<=3 else f"<code>{i}.</code>"
 
-    msg = "ðŸ† <b>ð†ð‹ðŽðð€ð‹ ð‹ð„ð€ðƒð„ð‘ððŽð€ð‘ðƒ</b> ðŸ†\n\n"
-    msg += "ðŸ’° <b>ð“ð¨ð© ðŸðŸŽ ð‘ð¢ðœð¡ðžð¬ð­:</b>\n"
+    msg = "🏆 <b>GLOBAL LEADERBOARD</b> 🏆\n\n"
+    msg += "💰 <b>Top 𝟏𝟎 Richest:</b>\n"
     for i, d in enumerate(rich, 1): 
-        msg += f"{get_badge(i)} {get_mention(d)} Â» <b>{format_money(d['balance'])}</b>\n"
+        msg += f"{get_badge(i)} {get_mention(d)} » <b>{format_money(d['balance'])}</b>\n"
     
-    msg += "\nðŸ©¸ <b>ð“ð¨ð© ðŸðŸŽ ðŠð¢ð¥ð¥ðžð«ð¬:</b>\n"
+    msg += "\n🩸 <b>Top 𝟏𝟎 Killers:</b>\n"
     for i, d in enumerate(kills, 1): 
-        msg += f"{get_badge(i)} {get_mention(d)} Â» <b>{d.get('kills',0)} Kills</b>\n"
+        msg += f"{get_badge(i)} {get_mention(d)} » <b>{d.get('kills',0)} Kills</b>\n"
 
     await update.effective_message.reply_text(msg, parse_mode=ParseMode.HTML)
 
@@ -211,7 +211,7 @@ async def give(update: Update, context: ContextTypes.DEFAULT_TYPE):
     sender = ensure_user_exists(update.effective_user)
     if not sender: return
     args = context.args
-    if not args: return await update.effective_message.reply_text("âš ï¸ <b>Usage:</b> <code>/give 100 @user</code>", parse_mode=ParseMode.HTML)
+    if not args: return await update.effective_message.reply_text("⚠️ <b>Usage:</b> <code>/give 100 @user</code>", parse_mode=ParseMode.HTML)
 
     amount = None
     target_str = None
@@ -219,15 +219,15 @@ async def give(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if arg.isdigit() and amount is None: amount = int(arg)
         else: target_str = arg
     
-    if amount is None: return await update.effective_message.reply_text("âš ï¸ <b>Error:</b> Amount must be a number.", parse_mode=ParseMode.HTML)
+    if amount is None: return await update.effective_message.reply_text("⚠️ <b>Error:</b> Amount must be a number.", parse_mode=ParseMode.HTML)
 
     target, error = await resolve_target(update, context, specific_arg=target_str)
     
-    if not target: return await update.effective_message.reply_text(error or "âš ï¸ <b>Tag someone to give coins.</b>", parse_mode=ParseMode.HTML)
+    if not target: return await update.effective_message.reply_text(error or "⚠️ <b>Tag someone to give coins.</b>", parse_mode=ParseMode.HTML)
 
-    if amount <= 0: return await update.effective_message.reply_text("âš ï¸ Don't be cheeky!", parse_mode=ParseMode.HTML)
-    if sender['balance'] < amount: return await update.effective_message.reply_text(f"ðŸ“‰ <b>Poor!</b> You only have <code>{format_money(sender['balance'])}</code>", parse_mode=ParseMode.HTML)
-    if sender['user_id'] == target['user_id']: return await update.effective_message.reply_text("ðŸ¤” Sending money to yourself?", parse_mode=ParseMode.HTML)
+    if amount <= 0: return await update.effective_message.reply_text("⚠️ Don't be cheeky!", parse_mode=ParseMode.HTML)
+    if sender['balance'] < amount: return await update.effective_message.reply_text(f"📉 <b>Poor!</b> You only have <code>{format_money(sender['balance'])}</code>", parse_mode=ParseMode.HTML)
+    if sender['user_id'] == target['user_id']: return await update.effective_message.reply_text("🤔 Sending money to yourself?", parse_mode=ParseMode.HTML)
 
     current_tax = TAX_RATE
     tax_type = "Standard"
@@ -244,11 +244,11 @@ async def give(update: Update, context: ContextTypes.DEFAULT_TYPE):
     users_collection.update_one({"user_id": OWNER_ID}, {"$inc": {"balance": tax}})
 
     msg = (
-        f"ðŸ’¸ <b>ð“ð«ðšð§ð¬ðŸðžð« ð‚ð¨ð¦ð©ð¥ðžð­ðž!</b>\n"
-        f"ðŸ‘¤ <b>From:</b> {get_mention(sender)}\n"
-        f"ðŸ‘¤ <b>To:</b> {get_mention(target)}\n"
-        f"ðŸ’° <b>Sent:</b> <code>{format_money(final_amt)}</code>\n"
-        f"ðŸ¦ <b>Tax:</b> <code>{format_money(tax)}</code> ({tax_type})"
+        f"💸 <b>Transfer Complete!</b>\n"
+        f"👤 <b>From:</b> {get_mention(sender)}\n"
+        f"👤 <b>To:</b> {get_mention(target)}\n"
+        f"💰 <b>Sent:</b> <code>{format_money(final_amt)}</code>\n"
+        f"🏦 <b>Tax:</b> <code>{format_money(tax)}</code> ({tax_type})"
     )
     await update.effective_message.reply_text(msg, parse_mode=ParseMode.HTML)
     

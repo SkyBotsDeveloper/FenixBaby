@@ -38,28 +38,28 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if not args and not reply:
         return await update.message.reply_text(
-            "ðŸ“¢ <b>ðð«ð¨ðšððœðšð¬ð­ ðŒðšð§ðšð ðžð«</b>\n\n"
+            "📢 <b>Broadcast Manager</b>\n\n"
             "<b>Usage:</b>\n"
-            "â€£ /broadcast -user (Reply to msg)\n"
-            "â€£ /broadcast -group (Reply to msg)\n\n"
+            "‣ /broadcast -user (Reply to msg)\n"
+            "‣ /broadcast -group (Reply to msg)\n\n"
             "<b>Flags:</b>\n"
-            "â€£ -clean : Copy msg (Use for Buttons)",
+            "‣ -clean : Copy msg (Use for Buttons)",
             parse_mode=ParseMode.HTML
         )
     
     target_type = "user" if "-user" in args else "group" if "-group" in args else None
     if not target_type:
-        return await update.message.reply_text("âš ï¸ Missing flag: <code>-user</code> or <code>-group</code>", parse_mode=ParseMode.HTML)
+        return await update.message.reply_text("⚠️ Missing flag: <code>-user</code> or <code>-group</code>", parse_mode=ParseMode.HTML)
 
     is_clean = "-clean" in args
     
     msg_text = None
     if not reply:
         clean_args = [a for a in args if a not in ["-user", "-group", "-clean"]]
-        if not clean_args: return await update.message.reply_text("âš ï¸ Give me a message or reply to one.", parse_mode=ParseMode.HTML)
+        if not clean_args: return await update.message.reply_text("⚠️ Give me a message or reply to one.", parse_mode=ParseMode.HTML)
         msg_text = " ".join(clean_args)
 
-    status_msg = await update.message.reply_text(f"â³ <b>Broadcasting to {target_type}s...</b>", parse_mode=ParseMode.HTML)
+    status_msg = await update.message.reply_text(f"⏳ <b>Broadcasting to {target_type}s...</b>", parse_mode=ParseMode.HTML)
     
     count = 0
     failed = 0
@@ -91,12 +91,12 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
             logger.error(f"Broadcast unexpected error for {cid}: {e}")
         
     final_text = (
-        f"âœ… <b>Broadcast Complete!</b>\n\n"
-        f"ðŸ“Š <b>Statistics:</b>\n"
-        f"â€£ Total Targets: {total_targets}\n"
-        f"â€£ Successfully Sent: {count}\n"
-        f"â€£ Failed/Blocked: {failed}\n"
-        f"â€£ Target Type: {target_type.title()}"
+        f"✅ <b>Broadcast Complete!</b>\n\n"
+        f"📊 <b>Statistics:</b>\n"
+        f"‣ Total Targets: {total_targets}\n"
+        f"‣ Successfully Sent: {count}\n"
+        f"‣ Failed/Blocked: {failed}\n"
+        f"‣ Target Type: {target_type.title()}"
     )
     try:
         await status_msg.edit_text(final_text, parse_mode=ParseMode.HTML)

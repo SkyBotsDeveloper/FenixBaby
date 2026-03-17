@@ -1,4 +1,4 @@
-﻿from fenix_baby.ui.components import (
+from fenix_baby.ui.components import (
     Buttons,
     Templates,
     quick_actions_keyboard,

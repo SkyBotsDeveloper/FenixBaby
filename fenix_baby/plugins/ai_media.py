@@ -41,13 +41,13 @@ async def draw_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = ensure_user_exists(update.effective_user)
     
     if not context.args:
-        return await update.message.reply_text("ðŸŽ¨ <b>Usage:</b> <code>/draw a cute cat girl</code>", parse_mode=ParseMode.HTML)
+        return await update.message.reply_text("🎨 <b>Usage:</b> <code>/draw a cute cat girl</code>", parse_mode=ParseMode.HTML)
     
     user_prompt = " ".join(context.args)
     base_prompt = f"{user_prompt}, anime style, masterpiece, best quality, ultra detailed, 8k, vibrant colors, soft lighting"
     encoded_prompt = urllib.parse.quote(base_prompt)
     
-    msg = await update.message.reply_text("ðŸŽ¨ <b>Painting...</b>", parse_mode=ParseMode.HTML)
+    msg = await update.message.reply_text("🎨 <b>Painting...</b>", parse_mode=ParseMode.HTML)
     
     try:
         seed = random.randint(0, 1000000)
@@ -66,13 +66,13 @@ async def draw_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_photo(
             chat_id=update.effective_chat.id,
             photo=image_url,
-            caption=f"ðŸ–¼ï¸ <b>Art by {BOT_NAME}</b>\nðŸ‘¤ {get_mention(user)}\nâœ¨ <i>{user_prompt}</i>",
+            caption=f"🖼️ <b>Art by {BOT_NAME}</b>\n👤 {get_mention(user)}\n✨ <i>{user_prompt}</i>",
             parse_mode=ParseMode.HTML
         )
         await msg.delete()
         
     except Exception as e:
-        await msg.edit_text(f"âŒ <b>Error:</b> Try again later.\n<code>{e}</code>", parse_mode=ParseMode.HTML)
+        await msg.edit_text(f"❌ <b>Error:</b> Try again later.\n<code>{e}</code>", parse_mode=ParseMode.HTML)
 
 # --- OPTIMIZED TTS ENGINE (MEMORY ONLY) ---
 
@@ -112,10 +112,10 @@ async def speak_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text = update.message.reply_to_message.text or update.message.reply_to_message.caption
         
     if not text:
-        return await update.message.reply_text("ðŸ—£ï¸ <b>Usage:</b> <code>/speak Hello</code>", parse_mode=ParseMode.HTML)
+        return await update.message.reply_text("🗣️ <b>Usage:</b> <code>/speak Hello</code>", parse_mode=ParseMode.HTML)
 
     if len(text) > 500:
-        return await update.message.reply_text("âŒ Text too long!", parse_mode=ParseMode.HTML)
+        return await update.message.reply_text("❌ Text too long!", parse_mode=ParseMode.HTML)
 
     # Show 'Recording' status so user knows bot is working
     await context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.RECORD_VOICE)
@@ -130,10 +130,10 @@ async def speak_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_voice(
             chat_id=update.effective_chat.id,
             voice=audio_bio,
-            caption=f"ðŸ—£ï¸ <b>Voice:</b> {voice_name}\nðŸ“ <i>{text[:50]}...</i>",
+            caption=f"🗣️ <b>Voice:</b> {voice_name}\n📝 <i>{text[:50]}...</i>",
             parse_mode=ParseMode.HTML
         )
         
     except Exception as e:
-        await update.message.reply_text(f"âŒ <b>Audio Error:</b> <code>{e}</code>", parse_mode=ParseMode.HTML)
+        await update.message.reply_text(f"❌ <b>Audio Error:</b> <code>{e}</code>", parse_mode=ParseMode.HTML)
 

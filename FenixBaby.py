@@ -112,46 +112,46 @@ def run_flask():
 # --- STARTUP LOGIC ---
 async def post_init(application):
     """Runs immediately after bot connects to Telegram."""
-    logger.info("ðŸš€ Bot initialization starting...")
+    logger.info("🚀 Bot initialization starting...")
 
     try:
         # Set the blue "Menu" button in Telegram
         await application.bot.set_my_commands(
             [
-                ("start", "ðŸŒ¸ Main Menu"),
-                ("help", "ðŸ“– Command Diary"),
-                ("bal", "ðŸ‘› Check Wallet & Rank"),
-                ("kill", "ðŸ”ª Murder for Loot"),
-                ("rob", "ðŸ’° Steal Coins"),
-                ("give", "ðŸ’¸ Transfer Coins"),
-                ("daily", "ðŸ“… Daily Reward"),
-                ("shop", "ðŸ›’ Item Shop"),
-                ("ranking", "ðŸ† Global Leaderboard"),
-                ("wpropose", "ðŸ’ Waifu Propose"),
-                ("wmarry", "ðŸ’’ Waifu Random"),
-                ("propose", "ðŸ’ Marry User"),
-                ("couple", "ðŸ’˜ Match Maker"),
-                ("marry", "ðŸ’ž Check Status"),
-                ("divorce", "ðŸ’” Break Up"),
-                ("claim", "ðŸ’Ž Claim Group Bonus"),
-                ("draw", "ðŸŽ¨ AI Art"),
-                ("speak", "ðŸ—£ï¸ AI Voice"),
-                ("dice", "ðŸŽ² Gamble"),
-                ("protect", "ðŸ›¡ï¸ Buy Immunity"),
-                ("revive", "âœ¨ Revive"),
-                ("chatbot", "ðŸ§  AI Settings"),
-                ("heist", "ðŸ¦ Team Heist"),
-                ("duel", "âš”ï¸ PvP Duel"),
-                ("lottery", "ðŸŽ° Try Your Luck"),
-                ("ping", "ðŸ“¶ Status"),
-                ("update", "ðŸ”„ Update Bot"),
+                ("start", "🌸 Main Menu"),
+                ("help", "📖 Command Diary"),
+                ("bal", "👛 Check Wallet & Rank"),
+                ("kill", "🔪 Murder for Loot"),
+                ("rob", "💰 Steal Coins"),
+                ("give", "💸 Transfer Coins"),
+                ("daily", "📅 Daily Reward"),
+                ("shop", "🛒 Item Shop"),
+                ("ranking", "🏆 Global Leaderboard"),
+                ("wpropose", "💍 Waifu Propose"),
+                ("wmarry", "💒 Waifu Random"),
+                ("propose", "💍 Marry User"),
+                ("couple", "💘 Match Maker"),
+                ("marry", "💞 Check Status"),
+                ("divorce", "💔 Break Up"),
+                ("claim", "💎 Claim Group Bonus"),
+                ("draw", "🎨 AI Art"),
+                ("speak", "🗣️ AI Voice"),
+                ("dice", "🎲 Gamble"),
+                ("protect", "🛡️ Buy Immunity"),
+                ("revive", "✨ Revive"),
+                ("chatbot", "🧠 AI Settings"),
+                ("heist", "🏦 Team Heist"),
+                ("duel", "⚔️ PvP Duel"),
+                ("lottery", "🎰 Try Your Luck"),
+                ("ping", "📶 Status"),
+                ("update", "🔄 Update Bot"),
             ]
         )
-        logger.info("âœ… Menu commands set successfully")
+        logger.info("✅ Menu commands set successfully")
 
         # Get bot info
         bot_info = await application.bot.get_me()
-        logger.info(f"âœ… Logged in as @{bot_info.username} (ID: {bot_info.id})")
+        logger.info(f"✅ Logged in as @{bot_info.username} (ID: {bot_info.id})")
 
         # Send "Online" Log to Channel
         try:
@@ -161,15 +161,15 @@ async def post_init(application):
                 {
                     "user": "System",
                     "chat": "Cloud Server",
-                    "action": f"{BOT_NAME} (@{bot_info.username}) is now Online! ðŸš€",
+                    "action": f"{BOT_NAME} (@{bot_info.username}) is now Online! 🚀",
                 },
             )
-            logger.info("âœ… Startup log sent to logger channel")
+            logger.info("✅ Startup log sent to logger channel")
         except Exception as log_err:
-            logger.warning(f"âš ï¸ Could not send startup log: {log_err}")
+            logger.warning(f"⚠️ Could not send startup log: {log_err}")
 
     except Exception as e:
-        logger.error(f"âŒ Post-init error: {e}", exc_info=True)
+        logger.error(f"❌ Post-init error: {e}", exc_info=True)
         raise
 
 
@@ -181,7 +181,7 @@ async def error_handler(update: object, context):
     if isinstance(update, Update) and update.effective_chat:
         try:
             await update.effective_chat.send_message(
-                f"âŒ An error occurred. Admin notified.\nError: {str(context.error)[:100]}"
+                f"❌ An error occurred. Admin notified.\nError: {str(context.error)[:100]}"
             )
         except Exception:
             pass
@@ -190,10 +190,10 @@ async def error_handler(update: object, context):
 # --- MAIN EXECUTION ---
 if __name__ == "__main__":
     # 1. Start Web Server (Background Thread)
-    logger.info("ðŸŒ Starting Flask health check server...")
+    logger.info("🌐 Starting Flask health check server...")
     flask_thread = Thread(target=run_flask, daemon=True)
     flask_thread.start()
-    logger.info(f"âœ… Flask server running on 0.0.0.0:{PORT}")
+    logger.info(f"✅ Flask server running on 0.0.0.0:{PORT}")
 
     # 2. Check Token
     if not TOKEN:
@@ -204,13 +204,13 @@ if __name__ == "__main__":
     from fenix_baby.database import users_collection
     try:
         users_collection.find_one()
-        logger.info("âœ… Database pre-warmed")
+        logger.info("✅ Database pre-warmed")
     except Exception as e:
-        logger.error(f"âš ï¸ Database pre-warm failed: {e}")
+        logger.error(f"⚠️ Database pre-warm failed: {e}")
 
     try:
         # 3. Configure Network (High Timeouts for Stability)
-        logger.info("ðŸ”§ Configuring network settings...")
+        logger.info("🔧 Configuring network settings...")
         t_request = HTTPXRequest(
             connection_pool_size=100,
             connect_timeout=60.0,
@@ -220,7 +220,7 @@ if __name__ == "__main__":
         )
 
         # 4. Build Application
-        logger.info("ðŸ—ï¸ Building bot application...")
+        logger.info("🏗️ Building bot application...")
         app_bot = (
             ApplicationBuilder()
             .token(TOKEN)
@@ -235,7 +235,7 @@ if __name__ == "__main__":
 
         # ================= REGISTER HANDLERS =================
 
-        logger.info("ðŸ“ Registering command handlers...")
+        logger.info("📝 Registering command handlers...")
 
         # --- Basics ---
         app_bot.add_handler(CommandHandler("start", start.start))
@@ -330,7 +330,7 @@ if __name__ == "__main__":
             CallbackQueryHandler(admin.confirm_handler, pattern="^cnf\\|")
         )
 
-        logger.info("ðŸ“ Registering message handlers (groups)...")
+        logger.info("📝 Registering message handlers (groups)...")
 
         # --- EVENTS & MESSAGE LISTENERS (ORDER IS CRITICAL) ---
 
@@ -396,9 +396,9 @@ if __name__ == "__main__":
         )
 
     except KeyboardInterrupt:
-        logger.info("âš ï¸ Bot interrupted by user")
+        logger.info("⚠️ Bot interrupted by user")
         sys.exit(0)
     except Exception as e:
-        logger.critical(f"âŒ Fatal error during startup: {e}", exc_info=True)
+        logger.critical(f"❌ Fatal error during startup: {e}", exc_info=True)
         sys.exit(1)
 

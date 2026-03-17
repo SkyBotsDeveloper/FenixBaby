@@ -34,15 +34,15 @@ async def dice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if not context.args: 
         dice_help = """
-â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-â•‘  ðŸŽ² <b>á´…Éªá´„á´‡ É¢á´€á´á´‡</b>  â•‘
-â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
-â•‘ Roll 4-6 to WIN!
-â•‘ Roll 1-3 and LOSE!
-â• â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â•£
-â•‘ ðŸ’µ <b>Min Bet:</b> <code>$50</code>
-â•‘ ðŸ“ <b>Usage:</b> <code>/dice [amount]</code>
-â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•"""
+╔═══════════════════════╗
+║  🎲 <b>dice game</b>  ║
+╠═══════════════════════╣
+║ Roll 4-6 to WIN!
+║ Roll 1-3 and LOSE!
+╠───────────────────────╣
+║ 💵 <b>Min Bet:</b> <code>$50</code>
+║ 📝 <b>Usage:</b> <code>/dice [amount]</code>
+╚═══════════════════════╝"""
         return await update.message.reply_text(dice_help, parse_mode=ParseMode.HTML)
     
     try: bet = int(context.args[0])
@@ -52,14 +52,14 @@ async def dice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if user['balance'] < bet: return await update.message.reply_text(Templates.error_box("Not enough money!"), parse_mode=ParseMode.HTML)
     
     # Send the native Dice
-    msg = await context.bot.send_dice(chat_id, emoji='ðŸŽ²')
+    msg = await context.bot.send_dice(chat_id, emoji='🎲')
     result = msg.dice.value # 1-6
     
     # Wait for animation
     await asyncio.sleep(3)
     
-    dice_faces = {1: "âš€", 2: "âš", 3: "âš‚", 4: "âšƒ", 5: "âš„", 6: "âš…"}
-    dice_face = dice_faces.get(result, "ðŸŽ²")
+    dice_faces = {1: "⚀", 2: "⚁", 3: "⚂", 4: "⚃", 5: "⚄", 6: "⚅"}
+    dice_face = dice_faces.get(result, "🎲")
     
     if result > 3: # 4, 5, 6 Wins
         win_amt = bet 
@@ -67,40 +67,40 @@ async def dice(update: Update, context: ContextTypes.DEFAULT_TYPE):
         updated_user = users_collection.find_one({"user_id": user["user_id"]})
         
         result_text = f"""
-â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-â•‘  ðŸŽ‰ <b>Êá´á´œ á´¡á´É´!</b>  â•‘
-â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
-â•‘ 
-â•‘   {dice_face} <b>Result:</b> {result}
-â•‘ 
-â• â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â•£
-â•‘ ðŸ’° <b>Won:</b> <code>+{format_money(win_amt)}</code>
-â•‘ ðŸ‘› <b>Balance:</b> <code>{format_money(updated_user['balance'])}</code>
-â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•"""
+╔═══════════════════════╗
+║  🎉 <b>you won!</b>  ║
+╠═══════════════════════╣
+║ 
+║   {dice_face} <b>Result:</b> {result}
+║ 
+╠───────────────────────╣
+║ 💰 <b>Won:</b> <code>+{format_money(win_amt)}</code>
+║ 👛 <b>Balance:</b> <code>{format_money(updated_user['balance'])}</code>
+╚═══════════════════════╝"""
     else: # 1, 2, 3 Loses
         users_collection.update_one({"user_id": user["user_id"]}, {"$inc": {"balance": -bet}})
         updated_user = users_collection.find_one({"user_id": user["user_id"]})
         
         result_text = f"""
-â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-â•‘  ðŸ’€ <b>Êá´á´œ ÊŸá´sá´›!</b>  â•‘
-â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
-â•‘ 
-â•‘   {dice_face} <b>Result:</b> {result}
-â•‘ 
-â• â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â•£
-â•‘ ðŸ“‰ <b>Lost:</b> <code>-{format_money(bet)}</code>
-â•‘ ðŸ‘› <b>Balance:</b> <code>{format_money(updated_user['balance'])}</code>
-â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•"""
+╔═══════════════════════╗
+║  💀 <b>you lost!</b>  ║
+╠═══════════════════════╣
+║ 
+║   {dice_face} <b>Result:</b> {result}
+║ 
+╠───────────────────────╣
+║ 📉 <b>Lost:</b> <code>-{format_money(bet)}</code>
+║ 👛 <b>Balance:</b> <code>{format_money(updated_user['balance'])}</code>
+╚═══════════════════════╝"""
 
     keyboard = InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("ðŸŽ² á´˜ÊŸá´€Ê á´€É¢á´€ÉªÉ´", callback_data="game_dice_info"),
-            InlineKeyboardButton("ðŸŽ° sÊŸá´á´›s", callback_data="game_slots_info"),
+            InlineKeyboardButton("🎲 play again", callback_data="game_dice_info"),
+            InlineKeyboardButton("🎰 slots", callback_data="game_slots_info"),
         ],
         [
-            InlineKeyboardButton("ðŸ’° Ê™á´€ÊŸá´€É´á´„á´‡", callback_data="quick_bal"),
-            InlineKeyboardButton("ðŸ  á´á´‡É´á´œ", callback_data="return_start"),
+            InlineKeyboardButton("💰 balance", callback_data="quick_bal"),
+            InlineKeyboardButton("🏠 menu", callback_data="return_start"),
         ]
     ])
 
@@ -118,7 +118,7 @@ async def slots(update: Update, context: ContextTypes.DEFAULT_TYPE):
     users_collection.update_one({"user_id": user["user_id"]}, {"$inc": {"balance": -bet}})
     
     # Send native Slot Machine
-    msg = await context.bot.send_dice(chat_id, emoji='ðŸŽ°')
+    msg = await context.bot.send_dice(chat_id, emoji='🎰')
     value = msg.dice.value 
     
     await asyncio.sleep(2) # Wait for spin
@@ -130,56 +130,56 @@ async def slots(update: Update, context: ContextTypes.DEFAULT_TYPE):
         updated_user = users_collection.find_one({"user_id": user["user_id"]})
         
         result_text = f"""
-â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-â•‘  ðŸŽ°âœ¨ <b>á´Šá´€á´„á´‹á´˜á´á´›!</b> âœ¨ðŸŽ°  â•‘
-â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
-â•‘                           
-â•‘     ðŸ”” ðŸ”” ðŸ””     
-â•‘     <b>7  7  7</b>      
-â•‘                           
-â• â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â•£
-â•‘ ðŸŽ‰ <b>Won:</b> <code>+{format_money(prize)}</code>
-â•‘ ðŸ‘› <b>Balance:</b> <code>{format_money(updated_user['balance'])}</code>
-â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•"""
+╔═══════════════════════════╗
+║  🎰✨ <b>jackpot!</b> ✨🎰  ║
+╠═══════════════════════════╣
+║                           
+║     🔔 🔔 🔔     
+║     <b>7  7  7</b>      
+║                           
+╠───────────────────────────╣
+║ 🎉 <b>Won:</b> <code>+{format_money(prize)}</code>
+║ 👛 <b>Balance:</b> <code>{format_money(updated_user['balance'])}</code>
+╚═══════════════════════════╝"""
     elif value in [1, 22, 43]: # 3 matching fruits
         prize = bet * 3
         users_collection.update_one({"user_id": user["user_id"]}, {"$inc": {"balance": prize}})
         updated_user = users_collection.find_one({"user_id": user["user_id"]})
         
         result_text = f"""
-â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-â•‘  ðŸŽ° <b>á´¡ÉªÉ´É´á´‡Ê€!</b> ðŸŽ°  â•‘
-â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
-â•‘                           
-â•‘     ðŸ’ ðŸ’ ðŸ’     
-â•‘                           
-â• â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â•£
-â•‘ ðŸ’° <b>Won:</b> <code>+{format_money(prize)}</code>
-â•‘ ðŸ‘› <b>Balance:</b> <code>{format_money(updated_user['balance'])}</code>
-â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•"""
+╔═══════════════════════════╗
+║  🎰 <b>winner!</b> 🎰  ║
+╠═══════════════════════════╣
+║                           
+║     🍒 🍒 🍒     
+║                           
+╠───────────────────────────╣
+║ 💰 <b>Won:</b> <code>+{format_money(prize)}</code>
+║ 👛 <b>Balance:</b> <code>{format_money(updated_user['balance'])}</code>
+╚═══════════════════════════╝"""
     else:
         updated_user = users_collection.find_one({"user_id": user["user_id"]})
         
         result_text = f"""
-â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-â•‘  ðŸŽ° <b>É´á´ ÊŸá´œá´„á´‹!</b> ðŸŽ°  â•‘
-â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
-â•‘                           
-â•‘     ðŸ‹ ðŸ’ ðŸ‡     
-â•‘                           
-â• â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â•£
-â•‘ ðŸ“‰ <b>Lost:</b> <code>-{format_money(bet)}</code>
-â•‘ ðŸ‘› <b>Balance:</b> <code>{format_money(updated_user['balance'])}</code>
-â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•"""
+╔═══════════════════════════╗
+║  🎰 <b>no luck!</b> 🎰  ║
+╠═══════════════════════════╣
+║                           
+║     🍋 🍒 🍇     
+║                           
+╠───────────────────────────╣
+║ 📉 <b>Lost:</b> <code>-{format_money(bet)}</code>
+║ 👛 <b>Balance:</b> <code>{format_money(updated_user['balance'])}</code>
+╚═══════════════════════════╝"""
 
     keyboard = InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("ðŸŽ° sá´˜ÉªÉ´ á´€É¢á´€ÉªÉ´", callback_data="game_slots_info"),
-            InlineKeyboardButton("ðŸŽ² á´…Éªá´„á´‡", callback_data="game_dice_info"),
+            InlineKeyboardButton("🎰 spin again", callback_data="game_slots_info"),
+            InlineKeyboardButton("🎲 dice", callback_data="game_dice_info"),
         ],
         [
-            InlineKeyboardButton("ðŸ’° Ê™á´€ÊŸá´€É´á´„á´‡", callback_data="quick_bal"),
-            InlineKeyboardButton("ðŸ  á´á´‡É´á´œ", callback_data="return_start"),
+            InlineKeyboardButton("💰 balance", callback_data="quick_bal"),
+            InlineKeyboardButton("🏠 menu", callback_data="return_start"),
         ]
     ])
 
@@ -188,14 +188,14 @@ async def slots(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def catch_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Guide for /catch command."""
     guide_text = """
-ðŸ“– <b>Êœá´á´¡ á´›á´ á´„á´€á´›á´„Êœ á´¡á´€ÉªÒ“á´œs</b>
+📖 <b>how to catch waifus</b>
 
 1. Stay active in groups! Waifus appear randomly after several messages.
 2. When a waifu appears, look at her image/name.
 3. Use <code>/catch [name]</code> to guess and claim her!
-4. If you guess right, she's yours! ðŸŽ‰
+4. If you guess right, she's yours! 🎉
 
-âœ¨ <b>á´›Éªá´˜:</b> Be the fastest to type the name correctly!
+✨ <b>tip:</b> Be the fastest to type the name correctly!
     """
     await update.message.reply_text(guide_text, parse_mode=ParseMode.HTML)
 

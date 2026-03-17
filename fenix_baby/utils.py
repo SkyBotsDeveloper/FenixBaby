@@ -21,6 +21,7 @@
 
 import html
 import re
+import unicodedata
 from datetime import datetime, timedelta
 
 from telegram import Bot
@@ -43,6 +44,70 @@ from fenix_baby.config import (
 
 SUDO_USERS = set()
 _SUDO_LOADED = False
+
+CONFUSABLE_CHAR_MAP = {
+    chr(0x0262): "g",
+    chr(0x026A): "i",
+    chr(0x0274): "n",
+    chr(0x0280): "r",
+    chr(0x028F): "y",
+    chr(0x0299): "b",
+    chr(0x029C): "h",
+    chr(0x029F): "l",
+    chr(0x03B7): "n",
+    chr(0x03C3): "o",
+    chr(0x03C5): "u",
+    chr(0x03FB): "m",
+    chr(0x0404): "E",
+    chr(0x0454): "e",
+    chr(0x0492): "F",
+    chr(0x0493): "f",
+    chr(0x1D00): "a",
+    chr(0x1D04): "c",
+    chr(0x1D05): "d",
+    chr(0x1D07): "e",
+    chr(0x1D0A): "j",
+    chr(0x1D0B): "k",
+    chr(0x1D0D): "m",
+    chr(0x1D0F): "o",
+    chr(0x1D18): "p",
+    chr(0x1D1B): "t",
+    chr(0x1D1C): "u",
+    chr(0x1D20): "v",
+    chr(0x1D21): "w",
+    chr(0x1D27): "a",
+    chr(0xA75A): "R",
+    chr(0xA75B): "r",
+}
+MATH_NAME_RE = re.compile(r"MATHEMATICAL .* (CAPITAL|SMALL) ([A-Z])$")
+SMALL_CAP_RE = re.compile(r"LATIN LETTER SMALL CAPITAL ([A-Z])$")
+
+
+def _ascii_equivalent(ch: str) -> str:
+    """Convert decorative Unicode letters to plain ASCII when possible."""
+    if ch in CONFUSABLE_CHAR_MAP:
+        return CONFUSABLE_CHAR_MAP[ch]
+
+    name = unicodedata.name(ch, "")
+    math_match = MATH_NAME_RE.search(name)
+    if math_match:
+        letter = math_match.group(2)
+        return letter if math_match.group(1) == "CAPITAL" else letter.lower()
+
+    small_cap_match = SMALL_CAP_RE.search(name)
+    if small_cap_match:
+        return small_cap_match.group(1).lower()
+
+    return ch
+
+
+def normalize_display_text(text: str | None) -> str:
+    """Return plain readable text without decorative alphabets."""
+    if not text:
+        return ""
+
+    normalized = unicodedata.normalize("NFKC", text)
+    return "".join(_ascii_equivalent(ch) for ch in normalized)
 
 
 def reload_sudoers() -> None:
@@ -90,27 +155,27 @@ async def log_to_channel(bot: Bot, event_type: str, details: dict) -> None:
     now = datetime.now().strftime("%I:%M %p | %d %b")
 
     headers = {
-        "start": "ðŸŸ¢ <b>ððŽð“ ðƒð„ðð‹ðŽð˜ð„ðƒ</b>",
-        "join": "ðŸ†• <b>ðð„ð– ð†ð‘ðŽð”ð</b>",
-        "leave": "âŒ <b>ð‹ð„ð…ð“ ð†ð‘ðŽð”ð</b>",
-        "command": "âš ï¸ <b>ð€ðƒðŒðˆð ð‹ðŽð†</b>",
-        "transfer": "ðŸ’¸ <b>ð“ð‘ð€ðð’ð€ð‚ð“ðˆðŽð</b>",
+        "start": "🟢 <b>BOT STARTED</b>",
+        "join": "🆕 <b>NEW GROUP</b>",
+        "leave": "❌ <b>LEFT GROUP</b>",
+        "command": "⚠️ <b>COMMAND LOG</b>",
+        "transfer": "💸 <b>TRANSFER</b>",
     }
-    header = headers.get(event_type, "ðŸ”” <b>ð‹ðŽð†</b>")
+    header = headers.get(event_type, "🔔 <b>LOG</b>")
 
-    text = f"{header}\n\nðŸ“… <b>Time:</b> <code>{now}</code>\n"
+    text = f"{header}\n\n📅 <b>Time:</b> <code>{now}</code>\n"
     if "user" in details:
-        text += f"ðŸ‘¤ <b>Trigger:</b> {details['user']}\n"
+        text += f"👤 <b>Trigger:</b> {details['user']}\n"
     if "chat" in details:
-        text += f"ðŸ“ <b>Chat:</b> {html.escape(str(details['chat']))}\n"
+        text += f"📍 <b>Chat:</b> {html.escape(str(details['chat']))}\n"
     if "action" in details:
-        text += f"ðŸŽ¬ <b>Action:</b> {details['action']}\n"
+        text += f"🎬 <b>Action:</b> {details['action']}\n"
     if "link" in details and details["link"] != "No Link":
         text += (
-            f"ðŸ”— <b>Link:</b> "
+            f"🔗 <b>Link:</b> "
             f"<a href='{html.escape(details['link'])}'>Click Here</a>\n"
         )
-    text += f"\nðŸ¤– <i>{BOT_NAME} Systems</i>"
+    text += f"\n🤖 <i>{BOT_NAME} System</i>"
 
     try:
         await bot.send_message(
@@ -276,27 +341,14 @@ async def resolve_target(update, context, specific_arg: str | None = None):
                     break
 
     if query:
-        import unicodedata
-        # NFKC normalization converts fancy/stylized characters to their standard equivalents
-        normalized_query = unicodedata.normalize('NFKC', query)
-        
-        # Stylized character map (Math Sans Bold)
-        font_map = {
-            "ð—”": "A", "ð—•": "B", "ð—–": "C", "ð——": "D", "ð—˜": "E", "ð—™": "F", "ð—š": "G", "ð—›": "H", "ð—œ": "I", "ð—": "J", "ð—ž": "K", "ð—Ÿ": "L", "ð— ": "M", "ð—¡": "N", "ð—¢": "O", "ð—£": "P", "ð—¤": "Q", "ð—¥": "R", "ð—¦": "S", "ð—§": "T", "ð—¨": "U", "ð—©": "V", "ð—ª": "W", "ð—«": "X", "ð—¬": "Y", "ð—­": "Z",
-            "ð—®": "a", "ð—¯": "b", "ð—°": "c", "ð—±": "d", "ð—²": "e", "ð—³": "f", "ð—´": "g", "ð—µ": "h", "ð—¶": "i", "ð—·": "j", "ð—¸": "k", "ð—¹": "l", "ð—º": "m", "ð—»": "n", "ð—¼": "o", "ð—½": "p", "ð—¾": "q", " r": "r", "ð˜€": "s", "ð˜": "t", "ð˜‚": "u", "ð˜ƒ": "v", "ð˜„": "w", "ð˜…": "x", "ð˜†": "y", "ð˜‡": "z",
-            "ðŸ¬": "0", "ðŸ­": "1", "ðŸ®": "2", "ðŸ¯": "3", "ðŸ°": "4", "ðŸ±": "5", "ðŸ²": "6", "ðŸ³": "7", "ðŸ´": "8", "ðŸµ": "9"
-        }
-        
-        # Resolve stylized characters back to normal ones
-        clean_query = "".join(font_map.get(c, c) for c in normalized_query)
-        # Final safety cleanup
+        clean_query = normalize_display_text(query)
         clean_query = "".join(c for c in clean_query if c.isalnum() or c in "@_")
         
         if clean_query.isdigit():
             doc = users_collection.find_one({"user_id": int(clean_query)})
             if doc:
                 return doc, None
-            return None, f"âŒ KRITI! ID {clean_query} not found."
+            return None, f"❌ User ID {clean_query} not found."
 
         if clean_query.startswith("@"):
             clean = clean_query.strip("@").lower()
@@ -310,7 +362,7 @@ async def resolve_target(update, context, specific_arg: str | None = None):
             if doc:
                 return doc, None
                 
-            return None, f"âŒ Oops! @{clean} not found."
+            return None, f"❌ Oops! @{clean} not found."
 
     return None, "No target found. Tag someone or reply to their message!"
 
@@ -394,46 +446,9 @@ def format_time(timedelta_obj: timedelta) -> str:
 # -------------------------------------------------------------------
 
 def stylize_text(text: str) -> str:
-    """
-    Converts normal text to Aesthetic Math Sans Bold.
-    SKIPS: @mentions, links, commands, and code blocks.
-    """
-    # Math-sans-bold style chars (letters + digits). [web:52][web:54]
-    font_map = {
-        "A": "ð—”", "B": "ð—•", "C": "ð—–", "D": "ð——", "E": "ð—˜", "F": "ð—™",
-        "G": "ð—š", "H": "ð—›", "I": "ð—œ", "J": "ð—", "K": "ð—ž", "L": "ð—Ÿ",
-        "M": "ð— ", "N": "ð—¡", "O": "ð—¢", "P": "ð—£", "Q": "ð—¤", "R": "ð—¥",
-        "S": "ð—¦", "T": "ð—§", "U": "ð—¨", "V": "ð—©", "W": "ð—ª", "X": "ð—«",
-        "Y": "ð—¬", "Z": "ð—­",
-        "a": "ð—®", "b": "ð—¯", "c": "ð—°", "d": "ð—±", "e": "ð—²", "f": "ð—³",
-        "g": "ð—´", "h": "ð—µ", "i": "ð—¶", "j": "ð—·", "k": "ð—¸", "l": "ð—¹",
-        "m": "ð—º", "n": "ð—»", "o": "ð—¼", "p": "ð—½", "q": "ð—¾", "r": "ð—¿",
-        "s": "ð˜€", "t": "ð˜", "u": "ð˜‚", "v": "ð˜ƒ", "w": "ð˜„", "x": "ð˜…",
-        "y": "ð˜†", "z": "ð˜‡",
-        "0": "ðŸ¬", "1": "ðŸ­", "2": "ðŸ®", "3": "ðŸ¯", "4": "ðŸ°",
-        "5": "ðŸ±", "6": "ðŸ²", "7": "ðŸ³", "8": "ðŸ´", "9": "ðŸµ",
-    }
-
-    def apply_style(chunk: str) -> str:
-        return "".join(font_map.get(c, c) for c in chunk)
-
-    # Keep mentions, URLs, inline code, and commands as-is. [web:57][web:60]
-    pattern = r"(@\w+|https?://\S+|`[^`]+`|/[a-zA-Z0-9_]+)"
-    parts = re.split(pattern, text)
-
-    result: list[str] = []
-    for part in parts:
-        if not part:
-            continue
-        if re.fullmatch(pattern, part):
-            # Command / mention / link / code: no styling
-            result.append(part)
-        else:
-            result.append(apply_style(part))
-
-    return "".join(result)
+    """Return plain readable text instead of decorative fonts."""
+    return normalize_display_text(text)
 
 
 # Initialize SUDO_USERS at module load
 reload_sudoers()
-

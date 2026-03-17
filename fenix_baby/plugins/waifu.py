@@ -49,8 +49,8 @@ async def waifu_action(update: Update, context: ContextTypes.DEFAULT_TYPE):
     s_link = get_mention(user)
     t_link = get_mention(target) if target else "the air"
     caption = f"{s_link} {cmd}s {t_link}!"
-    if cmd == "kill": caption = f"{s_link} murdered {t_link} ðŸ’€"
-    if cmd == "kiss": caption = f"{s_link} kissed {t_link} ðŸ’‹"
+    if cmd == "kill": caption = f"{s_link} murdered {t_link} 💀"
+    if cmd == "kiss": caption = f"{s_link} kissed {t_link} 💋"
 
     await update.message.reply_animation(animation=url, caption=caption, parse_mode=ParseMode.HTML)
 
@@ -59,7 +59,7 @@ async def wpropose(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = ensure_user_exists(update.effective_user)
     
     if user['balance'] < WAIFU_PROPOSE_COST:
-        return await update.message.reply_text(f"âŒ <b>Poor!</b> Need {format_money(WAIFU_PROPOSE_COST)}.", parse_mode=ParseMode.HTML)
+        return await update.message.reply_text(f"❌ <b>Poor!</b> Need {format_money(WAIFU_PROPOSE_COST)}.", parse_mode=ParseMode.HTML)
 
     users_collection.update_one({"user_id": user['user_id']}, {"$inc": {"balance": -WAIFU_PROPOSE_COST}})
     
@@ -74,7 +74,7 @@ async def wpropose(update: Update, context: ContextTypes.DEFAULT_TYPE):
         waifu_data = {"name": "Celestial Queen", "rarity": "Celestial", "date": datetime.utcnow()}
         users_collection.update_one({"user_id": user['user_id']}, {"$push": {"waifus": waifu_data}})
         
-        await update.message.reply_photo(img_url, caption=f"ðŸ’ <b>YES!</b>\n\nYou married a <b>CELESTIAL WAIFU</b>!", parse_mode=ParseMode.HTML)
+        await update.message.reply_photo(img_url, caption=f"💍 <b>YES!</b>\n\nYou married a <b>CELESTIAL WAIFU</b>!", parse_mode=ParseMode.HTML)
     else:
         prompt = "Roast a user named 'Player' who got rejected by an anime girl. Hinglish."
         roast = await ask_ai_raw("You are a savage Hinglish roaster.", prompt)
@@ -82,7 +82,7 @@ async def wpropose(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         await update.message.reply_animation(
             random.choice(fail_gifs),
-            caption=f"ðŸ’” <b>REJECTED!</b>\n\nðŸ—£ï¸ <i>{stylize_text(roast or 'Lol loser.')}</i>",
+            caption=f"💔 <b>REJECTED!</b>\n\n🗣️ <i>{stylize_text(roast or 'Lol loser.')}</i>",
             parse_mode=ParseMode.HTML
         )
 
@@ -90,7 +90,7 @@ async def wmarry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = ensure_user_exists(update.effective_user)
     last = user.get("last_wmarry")
     if last and (datetime.utcnow() - last) < timedelta(hours=2):
-        return await update.message.reply_text(f"â³ <b>Cooldown!</b> Wait.", parse_mode=ParseMode.HTML)
+        return await update.message.reply_text(f"⏳ <b>Cooldown!</b> Wait.", parse_mode=ParseMode.HTML)
 
     async with httpx.AsyncClient() as client:
         r = await client.get("https://api.waifu.pics/sfw/waifu")
@@ -99,5 +99,5 @@ async def wmarry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     waifu_data = {"name": "Random Waifu", "rarity": "Rare", "date": datetime.utcnow()}
     users_collection.update_one({"user_id": user['user_id']}, {"$push": {"waifus": waifu_data}, "$set": {"last_wmarry": datetime.utcnow()}})
 
-    await update.message.reply_photo(url, caption="ðŸ’ <b>Married!</b>\nAdded <b>Rare Waifu</b> to collection.", parse_mode=ParseMode.HTML)
+    await update.message.reply_photo(url, caption="💍 <b>Married!</b>\nAdded <b>Rare Waifu</b> to collection.", parse_mode=ParseMode.HTML)
 

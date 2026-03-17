@@ -1,4 +1,4 @@
-﻿import random
+import random
 import asyncio
 from datetime import datetime, timedelta
 from bson import ObjectId
@@ -18,32 +18,32 @@ HEIST_MAX_PLAYERS = 5
 HEIST_DURATION = 60
 
 TARGETS = [
-    {"name": "ðŸª Convenience Store", "difficulty": 1, "base_reward": 1000, "success_rate": 0.8},
-    {"name": "ðŸ¦ Local Bank", "difficulty": 2, "base_reward": 5000, "success_rate": 0.6},
-    {"name": "ðŸ’Ž Jewelry Store", "difficulty": 3, "base_reward": 10000, "success_rate": 0.5},
-    {"name": "ðŸ›ï¸ Central Bank", "difficulty": 4, "base_reward": 25000, "success_rate": 0.35},
-    {"name": "ðŸŽ° Casino Vault", "difficulty": 5, "base_reward": 50000, "success_rate": 0.25},
+    {"name": "🏪 Convenience Store", "difficulty": 1, "base_reward": 1000, "success_rate": 0.8},
+    {"name": "🏦 Local Bank", "difficulty": 2, "base_reward": 5000, "success_rate": 0.6},
+    {"name": "💎 Jewelry Store", "difficulty": 3, "base_reward": 10000, "success_rate": 0.5},
+    {"name": "🏛️ Central Bank", "difficulty": 4, "base_reward": 25000, "success_rate": 0.35},
+    {"name": "🎰 Casino Vault", "difficulty": 5, "base_reward": 50000, "success_rate": 0.25},
 ]
 
 ROLES = [
-    {"id": "hacker", "name": "ðŸ’» Hacker", "bonus": 0.15, "desc": "Disables security (+15% success)"},
-    {"id": "driver", "name": "ðŸš— Driver", "bonus": 0.10, "desc": "Fast getaway (+10% success)"},
-    {"id": "muscle", "name": "ðŸ’ª Muscle", "bonus": 0.20, "desc": "Intimidation (+20% success)"},
-    {"id": "insider", "name": "ðŸ•µï¸ Insider", "bonus": 0.25, "desc": "Inside info (+25% success)"},
+    {"id": "hacker", "name": "💻 Hacker", "bonus": 0.15, "desc": "Disables security (+15% success)"},
+    {"id": "driver", "name": "🚗 Driver", "bonus": 0.10, "desc": "Fast getaway (+10% success)"},
+    {"id": "muscle", "name": "💪 Muscle", "bonus": 0.20, "desc": "Intimidation (+20% success)"},
+    {"id": "insider", "name": "🕵️ Insider", "bonus": 0.25, "desc": "Inside info (+25% success)"},
 ]
 
 SUCCESS_MESSAGES = [
-    "The crew executed the heist flawlessly! ðŸŽ‰",
-    "Perfect execution! The guards didn't see it coming! ðŸ’°",
-    "Like taking candy from a baby! Clean getaway! ðŸš—ðŸ’¨",
-    "The vault was no match for this crew! ðŸ”“",
+    "The crew executed the heist flawlessly! 🎉",
+    "Perfect execution! The guards didn't see it coming! 💰",
+    "Like taking candy from a baby! Clean getaway! 🚗💨",
+    "The vault was no match for this crew! 🔓",
 ]
 
 FAIL_MESSAGES = [
-    "Alarm triggered! The crew barely escaped! ðŸš¨",
-    "Security was too tight! Had to abort! ðŸ›‘",
-    "Someone tripped the laser! Mission failed! âŒ",
-    "The cops showed up early! Everyone scattered! ðŸš”",
+    "Alarm triggered! The crew barely escaped! 🚨",
+    "Security was too tight! Had to abort! 🛑",
+    "Someone tripped the laser! Mission failed! ❌",
+    "The cops showed up early! Everyone scattered! 🚔",
 ]
 
 async def heist_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -60,13 +60,13 @@ async def heist_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return await show_active_heist(update, context, active_heist)
     
     text = Templates.info_card(
-        "ðŸ¦ HEIST PLANNING",
-        f"""â”ƒ ðŸ’° Entry Fee: <code>${HEIST_COST}</code>
-â”ƒ ðŸ‘¥ Players: {HEIST_MIN_PLAYERS}-{HEIST_MAX_PLAYERS}
-â”ƒ â±ï¸ Planning: {HEIST_DURATION}s
-â”ƒ
-â”ƒ <i>Choose a target and recruit</i>
-â”ƒ <i>your crew for the big score!</i>""",
+        "🏦 HEIST PLANNING",
+        f"""┃ 💰 Entry Fee: <code>${HEIST_COST}</code>
+┃ 👥 Players: {HEIST_MIN_PLAYERS}-{HEIST_MAX_PLAYERS}
+┃ ⏱️ Planning: {HEIST_DURATION}s
+┃
+┃ <i>Choose a target and recruit</i>
+┃ <i>your crew for the big score!</i>""",
         "Bigger risks = Bigger rewards!"
     )
     
@@ -90,28 +90,28 @@ async def show_active_heist(update: Update, context: ContextTypes.DEFAULT_TYPE, 
     crew = heist.get("crew", [])
     time_left = (heist["expires_at"] - datetime.utcnow()).seconds
     
-    crew_text = "\n".join([f"â”ƒ â€¢ {m['name']} ({m['role']})" for m in crew]) or "â”ƒ <i>No members yet...</i>"
+    crew_text = "\n".join([f"┃ • {m['name']} ({m['role']})" for m in crew]) or "┃ <i>No members yet...</i>"
     
     total_bonus = sum(next((r["bonus"] for r in ROLES if r["id"] == m.get("role_id", "")), 0) for m in crew)
     success_chance = min(0.95, target["success_rate"] + total_bonus)
     
     text = Templates.info_card(
-        f"ðŸ¦ HEIST: {target['name']}",
-        f"""â”ƒ ðŸ’Ž Reward: <code>${target['base_reward']:,}</code>
-â”ƒ ðŸ“Š Success: <code>{int(success_chance*100)}%</code>
-â”ƒ â±ï¸ Time: <code>{time_left}s</code>
-â”ƒ
-â”ƒ <b>CREW ({len(crew)}/{HEIST_MAX_PLAYERS}):</b>
+        f"🏦 HEIST: {target['name']}",
+        f"""┃ 💎 Reward: <code>${target['base_reward']:,}</code>
+┃ 📊 Success: <code>{int(success_chance*100)}%</code>
+┃ ⏱️ Time: <code>{time_left}s</code>
+┃
+┃ <b>CREW ({len(crew)}/{HEIST_MAX_PLAYERS}):</b>
 {crew_text}""",
         f"Entry: ${HEIST_COST}"
     )
     
     keyboard = []
     if len(crew) < HEIST_MAX_PLAYERS:
-        keyboard.append([InlineKeyboardButton("ðŸŽ­ á´Šá´ÉªÉ´ á´„Ê€á´‡á´¡", callback_data=f"heist_join_{heist['_id']}")])
+        keyboard.append([InlineKeyboardButton("🎭 join crew", callback_data=f"heist_join_{heist['_id']}")])
     
     if len(crew) >= HEIST_MIN_PLAYERS:
-        keyboard.append([InlineKeyboardButton("ðŸš€ sá´›á´€Ê€á´› Êœá´‡Éªsá´›", callback_data=f"heist_execute_{heist['_id']}")])
+        keyboard.append([InlineKeyboardButton("🚀 start heist", callback_data=f"heist_execute_{heist['_id']}")])
     
     keyboard.append([Buttons.back("menu_games")])
     
@@ -141,10 +141,10 @@ async def heist_start_callback(update: Update, context: ContextTypes.DEFAULT_TYP
     })
     
     if existing:
-        return await query.answer("âš ï¸ A heist is already being planned!", show_alert=True)
+        return await query.answer("⚠️ A heist is already being planned!", show_alert=True)
     
     if user["balance"] < HEIST_COST:
-        return await query.answer(f"âŒ Need ${HEIST_COST} to start!", show_alert=True)
+        return await query.answer(f"❌ Need ${HEIST_COST} to start!", show_alert=True)
     
     users_collection.update_one({"user_id": user["user_id"]}, {"$inc": {"balance": -HEIST_COST}})
     
@@ -156,7 +156,7 @@ async def heist_start_callback(update: Update, context: ContextTypes.DEFAULT_TYP
         "crew": [{
             "user_id": user["user_id"],
             "name": get_mention(user),
-            "role": "ðŸ‘‘ Leader",
+            "role": "👑 Leader",
             "role_id": "leader"
         }],
         "created_at": datetime.utcnow(),
@@ -175,21 +175,21 @@ async def heist_join_callback(update: Update, context: ContextTypes.DEFAULT_TYPE
     try:
         heist_id = ObjectId(query.data.split("_")[-1])
     except:
-        return await query.answer("âŒ Invalid heist!", show_alert=True)
+        return await query.answer("❌ Invalid heist!", show_alert=True)
     
     heist = heists_collection.find_one({"_id": heist_id, "status": "planning"})
     
     if not heist:
-        return await query.answer("âŒ Heist expired or started!", show_alert=True)
+        return await query.answer("❌ Heist expired or started!", show_alert=True)
     
     if any(m["user_id"] == user["user_id"] for m in heist.get("crew", [])):
-        return await query.answer("âš ï¸ Already in crew!", show_alert=True)
+        return await query.answer("⚠️ Already in crew!", show_alert=True)
     
     if len(heist.get("crew", [])) >= HEIST_MAX_PLAYERS:
-        return await query.answer("âŒ Crew is full!", show_alert=True)
+        return await query.answer("❌ Crew is full!", show_alert=True)
     
     if user["balance"] < HEIST_COST:
-        return await query.answer(f"âŒ Need ${HEIST_COST}!", show_alert=True)
+        return await query.answer(f"❌ Need ${HEIST_COST}!", show_alert=True)
     
     role = random.choice(ROLES)
     
@@ -205,7 +205,7 @@ async def heist_join_callback(update: Update, context: ContextTypes.DEFAULT_TYPE
         }}}
     )
     
-    await query.answer(f"âœ… Joined as {role['name']}!")
+    await query.answer(f"✅ Joined as {role['name']}!")
     
     heist = heists_collection.find_one({"_id": heist_id})
     await show_active_heist(update, context, heist)
@@ -216,15 +216,15 @@ async def heist_execute_callback(update: Update, context: ContextTypes.DEFAULT_T
     try:
         heist_id = ObjectId(query.data.split("_")[-1])
     except:
-        return await query.answer("âŒ Invalid heist!", show_alert=True)
+        return await query.answer("❌ Invalid heist!", show_alert=True)
     
     heist = heists_collection.find_one({"_id": heist_id, "status": "planning"})
     
     if not heist:
-        return await query.answer("âŒ Heist not found!", show_alert=True)
+        return await query.answer("❌ Heist not found!", show_alert=True)
     
     if query.from_user.id != heist["leader_id"]:
-        return await query.answer("âŒ Only the leader can start!", show_alert=True)
+        return await query.answer("❌ Only the leader can start!", show_alert=True)
     
     heists_collection.update_one({"_id": heist_id}, {"$set": {"status": "executing"}})
     
@@ -238,14 +238,14 @@ async def heist_execute_callback(update: Update, context: ContextTypes.DEFAULT_T
     try:
         await query.edit_message_text(
             f"""
-â•”{'â•'*22}â•—
-â•‘  ðŸ¦ <b>HEIST IN PROGRESS</b>
-â• {'â•'*22}â•£
-â•‘  ðŸŽ¯ Target: {target['name']}
-â•‘  ðŸ‘¥ Crew: {len(crew)} members
-â•‘  
-â•‘  â³ <i>Executing plan...</i>
-â•š{'â•'*22}â•""",
+╔{'═'*22}╗
+║  🏦 <b>HEIST IN PROGRESS</b>
+╠{'═'*22}╣
+║  🎯 Target: {target['name']}
+║  👥 Crew: {len(crew)} members
+║  
+║  ⏳ <i>Executing plan...</i>
+╚{'═'*22}╝""",
             parse_mode=ParseMode.HTML
         )
     except Exception as e:
@@ -254,14 +254,14 @@ async def heist_execute_callback(update: Update, context: ContextTypes.DEFAULT_T
             try:
                 await query.edit_message_caption(
                     caption=f"""
-â•”{'â•'*22}â•—
-â•‘  ðŸ¦ <b>HEIST IN PROGRESS</b>
-â• {'â•'*22}â•£
-â•‘  ðŸŽ¯ Target: {target['name']}
-â•‘  ðŸ‘¥ Crew: {len(crew)} members
-â•‘  
-â•‘  â³ <i>Executing plan...</i>
-â•š{'â•'*22}â•""",
+╔{'═'*22}╗
+║  🏦 <b>HEIST IN PROGRESS</b>
+╠{'═'*22}╣
+║  🎯 Target: {target['name']}
+║  👥 Crew: {len(crew)} members
+║  
+║  ⏳ <i>Executing plan...</i>
+╚{'═'*22}╝""",
                     parse_mode=ParseMode.HTML
                 )
             except: pass
@@ -282,20 +282,20 @@ async def heist_execute_callback(update: Update, context: ContextTypes.DEFAULT_T
                 {"$inc": {"balance": per_player, "heists_won": 1}}
             )
         
-        crew_names = "\n".join([f"â•‘  â€¢ {m['name']}: +${per_player:,}" for m in crew])
+        crew_names = "\n".join([f"║  • {m['name']}: +${per_player:,}" for m in crew])
         
         result_text = f"""
-â•”{'â•'*22}â•—
-â•‘  ðŸŽ‰ <b>HEIST SUCCESS!</b>
-â• {'â•'*22}â•£
-â•‘  ðŸŽ¯ {target['name']}
-â•‘  ðŸ’° Total: <code>${total_reward:,}</code>
-â•‘
-â•‘  <b>PAYOUTS:</b>
+╔{'═'*22}╗
+║  🎉 <b>HEIST SUCCESS!</b>
+╠{'═'*22}╣
+║  🎯 {target['name']}
+║  💰 Total: <code>${total_reward:,}</code>
+║
+║  <b>PAYOUTS:</b>
 {crew_names}
-â• {'â•'*22}â•£
-â•‘  <i>{random.choice(SUCCESS_MESSAGES)}</i>
-â•š{'â•'*22}â•"""
+╠{'═'*22}╣
+║  <i>{random.choice(SUCCESS_MESSAGES)}</i>
+╚{'═'*22}╝"""
     else:
         for member in crew:
             users_collection.update_one(
@@ -304,19 +304,19 @@ async def heist_execute_callback(update: Update, context: ContextTypes.DEFAULT_T
             )
         
         result_text = f"""
-â•”{'â•'*22}â•—
-â•‘  ðŸ’€ <b>HEIST FAILED!</b>
-â• {'â•'*22}â•£
-â•‘  ðŸŽ¯ {target['name']}
-â•‘  ðŸ’¸ Lost: <code>${HEIST_COST * len(crew):,}</code>
-â•‘
-â•‘  <i>{random.choice(FAIL_MESSAGES)}</i>
-â•š{'â•'*22}â•"""
+╔{'═'*22}╗
+║  💀 <b>HEIST FAILED!</b>
+╠{'═'*22}╣
+║  🎯 {target['name']}
+║  💸 Lost: <code>${HEIST_COST * len(crew):,}</code>
+║
+║  <i>{random.choice(FAIL_MESSAGES)}</i>
+╚{'═'*22}╝"""
     
     heists_collection.update_one({"_id": heist_id}, {"$set": {"status": "completed"}})
     
     keyboard = InlineKeyboardMarkup([
-        [InlineKeyboardButton("ðŸ”„ É´á´‡á´¡ Êœá´‡Éªsá´›", callback_data="heist_menu")],
+        [InlineKeyboardButton("🔄 new heist", callback_data="heist_menu")],
         [Buttons.back("menu_games")]
     ])
     

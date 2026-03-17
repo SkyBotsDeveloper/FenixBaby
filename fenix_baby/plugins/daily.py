@@ -43,7 +43,7 @@ async def daily(update: Update, context: ContextTypes.DEFAULT_TYPE):
             rem = timedelta(hours=24) - (now - last)
             hours, remainder = divmod(int(rem.total_seconds()), 3600)
             minutes, _ = divmod(remainder, 60)
-            return await update.message.reply_text(f"â³ <b>Cooldown!</b>\n\nBabu thoda sabar karo! ðŸ˜Š\nWait <code>{hours}h {minutes}m</code> more.", parse_mode=ParseMode.HTML)
+            return await update.message.reply_text(f"⏳ <b>Cooldown!</b>\n\nBabu thoda sabar karo! 😊\nWait <code>{hours}h {minutes}m</code> more.", parse_mode=ParseMode.HTML)
     
     streak = user.get("daily_streak", 0)
     # If more than 48 hours, reset streak
@@ -66,13 +66,13 @@ async def daily(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     
     msg = (
-        f"ðŸ“… <b>ðƒðšð¢ð¥ð² ð‘ðžð°ðšð«ð: Day {streak}</b>\n\n"
-        f"ðŸ’° <b>Received:</b> <code>{format_money(reward)}</code>\n"
+        f"📅 <b>Daily Reward: Day {streak}</b>\n\n"
+        f"💰 <b>Received:</b> <code>{format_money(reward)}</code>\n"
     )
     if bonus:
-        msg += f"ðŸŽ‰ <b>Weekly Bonus:</b> <code>{format_money(bonus)}</code>\n"
+        msg += f"🎉 <b>Weekly Bonus:</b> <code>{format_money(bonus)}</code>\n"
     
-    msg += f"\nâœ¨ Come back tomorrow for more!"
+    msg += f"\n✨ Come back tomorrow for more!"
     
     await update.message.reply_text(msg, parse_mode=ParseMode.HTML)
 

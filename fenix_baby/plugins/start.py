@@ -1,4 +1,4 @@
-﻿import random
+import random
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto
 from telegram.ext import ContextTypes
 from telegram.constants import ParseMode, ChatType
@@ -11,28 +11,28 @@ from fenix_baby.ui.components import Templates, Buttons, quick_actions_keyboard,
 SUDO_IMG = "https://files.catbox.moe/veuo1s.jpg"
 
 WELCOME_QUOTES = [
-    "Ready to dominate? ðŸ’ª",
-    "The streets await you! ðŸŒƒ",
-    "Time to make some money! ðŸ’°",
-    "Your empire starts here! ðŸ‘‘",
+    "Ready to dominate? 💪",
+    "The streets await you! 🌃",
+    "Time to make some money! 💰",
+    "Your empire starts here! 👑",
 ]
 
 def get_start_keyboard(bot_username):
     rows = [[
-        InlineKeyboardButton("âž• á´€á´…á´… á´›á´ É¢Ê€á´á´œá´˜", url=f"https://t.me/{bot_username}?startgroup=true"),
+        InlineKeyboardButton("➕ Add to Group", url=f"https://t.me/{bot_username}?startgroup=true"),
     ]]
 
     link_row = []
     if SUPPORT_CHANNEL:
-        link_row.append(InlineKeyboardButton("ðŸ“¢ á´œá´˜á´…á´€á´›á´‡s", url=SUPPORT_CHANNEL))
+        link_row.append(InlineKeyboardButton("📢 Updates", url=SUPPORT_CHANNEL))
     if SUPPORT_GROUP:
-        link_row.append(InlineKeyboardButton("ðŸ’¬ sá´œá´˜á´˜á´Ê€á´›", url=SUPPORT_GROUP))
+        link_row.append(InlineKeyboardButton("💬 Support", url=SUPPORT_GROUP))
     if link_row:
         rows.append(link_row)
 
-    final_row = [InlineKeyboardButton("â“ Êœá´‡ÊŸá´˜", callback_data="help_main")]
+    final_row = [InlineKeyboardButton("❓ Help", callback_data="help_main")]
     if OWNER_LINK:
-        final_row.append(InlineKeyboardButton("ðŸ‘¨â€ðŸ’» á´…á´‡á´ ", url=OWNER_LINK))
+        final_row.append(InlineKeyboardButton("👨‍💻 Owner", url=OWNER_LINK))
     rows.append(final_row)
 
     return InlineKeyboardMarkup(rows)
@@ -40,24 +40,24 @@ def get_start_keyboard(bot_username):
 def get_help_keyboard():
     return InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("âš”ï¸ É¢á´€á´á´‡s & Ê€á´˜É¢", callback_data="help_rpg"),
-            InlineKeyboardButton("ðŸ’° á´‡á´„á´É´á´á´Ê", callback_data="help_economy"),
+            InlineKeyboardButton("⚔️ Games & RPG", callback_data="help_rpg"),
+            InlineKeyboardButton("💰 Economy", callback_data="help_economy"),
         ],
         [
-            InlineKeyboardButton("ðŸ’ž sá´á´„Éªá´€ÊŸ", callback_data="help_social"),
-            InlineKeyboardButton("ðŸ¤– á´€Éª & Ò“á´œÉ´", callback_data="help_fun"),
+            InlineKeyboardButton("💞 Social", callback_data="help_social"),
+            InlineKeyboardButton("🤖 AI & Fun", callback_data="help_fun"),
         ],
         [
-            InlineKeyboardButton("âš™ï¸ É¢Ê€á´á´œá´˜", callback_data="help_group"),
-            InlineKeyboardButton("ðŸ‘‘ sá´œá´…á´", callback_data="help_sudo"),
+            InlineKeyboardButton("⚙️ Group", callback_data="help_group"),
+            InlineKeyboardButton("👑 Sudo", callback_data="help_sudo"),
         ],
         [
-            InlineKeyboardButton("ðŸ  Êœá´á´á´‡", callback_data="return_start"),
+            InlineKeyboardButton("🏠 Home", callback_data="return_start"),
         ],
     ])
 
 def get_back_keyboard(callback="help_main"):
-    return InlineKeyboardMarkup([[InlineKeyboardButton("â—„ Ê™á´€á´„á´‹", callback_data=callback)]])
+    return InlineKeyboardMarkup([[InlineKeyboardButton("◄ Back", callback_data=callback)]])
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
@@ -66,23 +66,23 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     track_group(chat, user)
     
     balance = db_user.get("balance", 0)
-    status_emoji = "ðŸ’€" if db_user.get("status") == "dead" else "âœ¨"
+    status_emoji = "💀" if db_user.get("status") == "dead" else "✨"
     quote = random.choice(WELCOME_QUOTES)
     
     caption = f"""
-â•”{'â•'*22}â•—
-â•‘  {status_emoji} <b>Welcome, {get_mention(user)}!</b>
-â• {'â•'*22}â•£
-â•‘  
-â•‘  ðŸŽ® <b>{BOT_NAME}</b>
-â•‘  <i>The Ultimate RPG & Economy Bot</i>
-â•‘  
-â•‘  ðŸ’° Balance: <code>{format_money(balance)}</code>
-â•‘  ðŸ“Š Status: <code>{db_user.get('status', 'alive').title()}</code>
-â•‘  
-â• {'â•'*22}â•£
-â•‘  <i>{quote}</i>
-â•š{'â•'*22}â•
+╔{'═'*22}╗
+║  {status_emoji} <b>Welcome, {get_mention(user)}!</b>
+╠{'═'*22}╣
+║  
+║  🎮 <b>{BOT_NAME}</b>
+║  <i>The Ultimate RPG & Economy Bot</i>
+║  
+║  💰 Balance: <code>{format_money(balance)}</code>
+║  📊 Status: <code>{db_user.get('status', 'alive').title()}</code>
+║  
+╠{'═'*22}╣
+║  <i>{quote}</i>
+╚{'═'*22}╝
 
 <b>Quick Actions:</b> Use buttons below!"""
 
@@ -110,19 +110,19 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = f"""
-â•”{'â•'*22}â•—
-â•‘  ðŸ“– <b>{BOT_NAME} HELP</b>
-â• {'â•'*22}â•£
-â•‘  
-â•‘  Select a category below to
-â•‘  explore all available features!
-â•‘  
-â•‘  ðŸŽ® <b>Games</b> - RPG & Gambling
-â•‘  ðŸ’° <b>Economy</b> - Money & Shop
-â•‘  ðŸ’ž <b>Social</b> - Marriage & Love
-â•‘  ðŸ¤– <b>AI</b> - Chat & Art
-â•‘  
-â•š{'â•'*22}â•"""
+╔{'═'*22}╗
+║  📖 <b>{BOT_NAME} HELP</b>
+╠{'═'*22}╣
+║  
+║  Select a category below to
+║  explore all available features!
+║  
+║  🎮 <b>Games</b> - RPG & Gambling
+║  💰 <b>Economy</b> - Money & Shop
+║  💞 <b>Social</b> - Marriage & Love
+║  🤖 <b>AI</b> - Chat & Art
+║  
+╚{'═'*22}╝"""
     
     await update.message.reply_photo(
         photo=HELP_IMG_URL,
@@ -147,24 +147,24 @@ async def help_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if data == "menu_games":
         text = f"""
-â•”{'â•'*22}â•—
-â•‘  ðŸŽ® <b>GAMES MENU</b>
-â• {'â•'*22}â•£
-â•‘  
-â•‘  âš”ï¸ <b>Combat Games</b>
-â•‘  â€¢ Kill - Murder for loot
-â•‘  â€¢ Rob - Steal coins
-â•‘  â€¢ Duel - High stakes PvP!
-â•‘  
-â•‘  ðŸŽ² <b>Gambling</b>
-â•‘  â€¢ Dice - Roll for money
-â•‘  â€¢ Slots - Spin to win
-â•‘  â€¢ Lottery - 10k Jackpot!
-â•‘  
-â•‘  ðŸ¦ <b>Cooperative</b>
-â•‘  â€¢ Heist - Team robbery!
-â•‘  
-â•š{'â•'*22}â•
+╔{'═'*22}╗
+║  🎮 <b>GAMES MENU</b>
+╠{'═'*22}╣
+║  
+║  ⚔️ <b>Combat Games</b>
+║  • Kill - Murder for loot
+║  • Rob - Steal coins
+║  • Duel - High stakes PvP!
+║  
+║  🎲 <b>Gambling</b>
+║  • Dice - Roll for money
+║  • Slots - Spin to win
+║  • Lottery - 10k Jackpot!
+║  
+║  🏦 <b>Cooperative</b>
+║  • Heist - Team robbery!
+║  
+╚{'═'*22}╝
 
 <i>Select a game to learn more!</i>"""
         
@@ -176,58 +176,58 @@ async def help_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if data == "menu_economy":
         text = f"""
-â•”{'â•'*22}â•—
-â•‘  ðŸ’° <b>ECONOMY MENU</b>
-â• {'â•'*22}â•£
-â•‘  
-â•‘  ðŸ’µ /bal - Check balance
-â•‘  ðŸŽ /daily - Daily reward
-â•‘  ðŸ† /ranking - Leaderboard
-â•‘  ðŸ’¸ /give - Transfer coins
-â•‘  ðŸ“¦ /claim - Group bonus
-â•‘  ðŸ›’ /shop - Buy items
-â•‘  
-â•š{'â•'*22}â•"""
+╔{'═'*22}╗
+║  💰 <b>ECONOMY MENU</b>
+╠{'═'*22}╣
+║  
+║  💵 /bal - Check balance
+║  🎁 /daily - Daily reward
+║  🏆 /ranking - Leaderboard
+║  💸 /give - Transfer coins
+║  📦 /claim - Group bonus
+║  🛒 /shop - Buy items
+║  
+╚{'═'*22}╝"""
         
         keyboard = InlineKeyboardMarkup([
             [
-                InlineKeyboardButton("ðŸ’µ Ê™á´€ÊŸá´€É´á´„á´‡", callback_data="quick_bal"),
-                InlineKeyboardButton("ðŸŽ á´…á´€ÉªÊŸÊ", callback_data="quick_daily"),
+                InlineKeyboardButton("💵 Balance", callback_data="quick_bal"),
+                InlineKeyboardButton("🎁 Daily", callback_data="quick_daily"),
             ],
             [
-                InlineKeyboardButton("ðŸ›’ sÊœá´á´˜", callback_data="shop_main"),
-                InlineKeyboardButton("ðŸ† Ê€á´€É´á´‹ÉªÉ´É¢", callback_data="quick_ranking"),
+                InlineKeyboardButton("🛒 Shop", callback_data="shop_main"),
+                InlineKeyboardButton("🏆 Ranking", callback_data="quick_ranking"),
             ],
             [Buttons.back("return_start")],
         ])
         
         try:
             if query.message.caption == text:
-                return await query.answer("Already here! ðŸ˜Š")
+                return await query.answer("Already here! 😊")
             await query.message.edit_caption(caption=text, parse_mode=ParseMode.HTML, reply_markup=keyboard)
         except Exception:
             try:
                 if query.message.text == text:
-                    return await query.answer("Already here! ðŸ˜Š")
+                    return await query.answer("Already here! 😊")
                 await query.message.edit_text(text, parse_mode=ParseMode.HTML, reply_markup=keyboard)
             except Exception: pass
         return
 
     if data == "help_main":
         text = f"""
-â•”{'â•'*22}â•—
-â•‘  ðŸ“– <b>{BOT_NAME} HELP</b>
-â• {'â•'*22}â•£
-â•‘  
-â•‘  Select a category below to
-â•‘  explore all available features!
-â•‘  
-â•‘  ðŸŽ® <b>Games</b> - RPG & Gambling
-â•‘  ðŸ’° <b>Economy</b> - Money & Shop
-â•‘  ðŸ’ž <b>Social</b> - Marriage & Love
-â•‘  ðŸ¤– <b>AI</b> - Chat & Art
-â•‘  
-â•š{'â•'*22}â•"""
+╔{'═'*22}╗
+║  📖 <b>{BOT_NAME} HELP</b>
+╠{'═'*22}╣
+║  
+║  Select a category below to
+║  explore all available features!
+║  
+║  🎮 <b>Games</b> - RPG & Gambling
+║  💰 <b>Economy</b> - Money & Shop
+║  💞 <b>Social</b> - Marriage & Love
+║  🤖 <b>AI</b> - Chat & Art
+║  
+╚{'═'*22}╝"""
         try:
             await query.message.edit_media(
                 InputMediaPhoto(media=HELP_IMG_URL, caption=text, parse_mode=ParseMode.HTML),
@@ -245,64 +245,64 @@ async def help_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if data == "help_social":
         text = f"""
-â•”{'â•'*22}â•—
-â•‘  ðŸ’ž <b>SOCIAL & LOVE</b>
-â• {'â•'*22}â•£
-â•‘  
-â•‘  ðŸ’ <b>/propose @user</b>
-â•‘  â”” Propose marriage (5% tax perk)
-â•‘  
-â•‘  ðŸ’’ <b>/marry</b>
-â•‘  â”” Check relationship status
-â•‘  
-â•‘  ðŸ’” <b>/divorce</b>
-â•‘  â”” Break up (Cost: $2,000)
-â•‘  
-â•‘  ðŸ’˜ <b>/couple</b>
-â•‘  â”” Fun matchmaking game!
-â•‘  
-â•‘  ðŸŒ¸ <b>/wpropose</b>
-â•‘  â”” Propose to anime waifu
-â•‘  
-â•š{'â•'*22}â•"""
+╔{'═'*22}╗
+║  💞 <b>SOCIAL & LOVE</b>
+╠{'═'*22}╣
+║  
+║  💍 <b>/propose @user</b>
+║  └ Propose marriage (5% tax perk)
+║  
+║  💒 <b>/marry</b>
+║  └ Check relationship status
+║  
+║  💔 <b>/divorce</b>
+║  └ Break up (Cost: $2,000)
+║  
+║  💘 <b>/couple</b>
+║  └ Fun matchmaking game!
+║  
+║  🌸 <b>/wpropose</b>
+║  └ Propose to anime waifu
+║  
+╚{'═'*22}╝"""
 
     elif data == "help_economy":
         text = f"""
-â•”{'â•'*22}â•—
-â•‘  ðŸ’° <b>ECONOMY & SHOP</b>
-â• {'â•'*22}â•£
-â•‘  
-â•‘  ðŸ’µ <b>/bal</b> - Wallet & Inventory
-â•‘  ðŸŽ <b>/daily</b> - Streak Rewards
-â•‘  ðŸ† <b>/ranking</b> - Leaderboards
-â•‘  ðŸ’¸ <b>/give [amt] @user</b>
-â•‘  â”” Transfer (10% tax)
-â•‘  ðŸ“¦ <b>/claim</b> - Group Bonus
-â•‘  ðŸ›’ <b>/shop</b> - Weapons & Armor
-â•‘  ðŸ›ï¸ <b>/buy [item]</b>
-â•‘  
-â•š{'â•'*22}â•"""
+╔{'═'*22}╗
+║  💰 <b>ECONOMY & SHOP</b>
+╠{'═'*22}╣
+║  
+║  💵 <b>/bal</b> - Wallet & Inventory
+║  🎁 <b>/daily</b> - Streak Rewards
+║  🏆 <b>/ranking</b> - Leaderboards
+║  💸 <b>/give [amt] @user</b>
+║  └ Transfer (10% tax)
+║  📦 <b>/claim</b> - Group Bonus
+║  🛒 <b>/shop</b> - Weapons & Armor
+║  🛍️ <b>/buy [item]</b>
+║  
+╚{'═'*22}╝"""
 
     elif data == "help_rpg":
         text = f"""
-â•”{'â•'*22}â•—
-â•‘  ðŸŽ® <b>GAMES MENU</b>
-â• {'â•'*22}â•£
-â•‘  
-â•‘  âš”ï¸ <b>Combat Games</b>
-â•‘  â€¢ Kill - Murder for loot
-â•‘  â€¢ Rob - Steal coins
-â•‘  â€¢ Duel - High stakes PvP!
-â•‘  
-â•‘  ðŸŽ² <b>Gambling</b>
-â•‘  â€¢ Dice - Roll for money
-â•‘  â€¢ Slots - Spin to win
-â•‘  â€¢ Lottery - 10k Jackpot!
-â•‘  
-â•‘  ðŸ¦ <b>Cooperative</b>
-â•‘  â€¢ Heist - Team robbery!
-â•‘  
-â•š{'â•'*22}â•
+╔{'═'*22}╗
+║  🎮 <b>GAMES MENU</b>
+╠{'═'*22}╣
+║  
+║  ⚔️ <b>Combat Games</b>
+║  • Kill - Murder for loot
+║  • Rob - Steal coins
+║  • Duel - High stakes PvP!
+║  
+║  🎲 <b>Gambling</b>
+║  • Dice - Roll for money
+║  • Slots - Spin to win
+║  • Lottery - 10k Jackpot!
+║  
+║  🏦 <b>Cooperative</b>
+║  • Heist - Team robbery!
+║  
+╚{'═'*22}╝
 
 <i>Select a game to learn more!</i>"""
         
@@ -314,72 +314,72 @@ async def help_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     elif data == "help_fun":
         text = f"""
-â•”{'â•'*22}â•—
-â•‘  ðŸ¤– <b>AI & FUN</b>
-â• {'â•'*22}â•£
-â•‘  
-â•‘  ðŸŽ¨ <b>/draw [prompt]</b>
-â•‘  â”” AI generates anime art
-â•‘  
-â•‘  ðŸ—£ï¸ <b>/speak [text]</b>
-â•‘  â”” Anime voice synthesis
-â•‘  
-â•‘  ðŸ§  <b>/chatbot</b>
-â•‘  â”” AI chat settings
-â•‘  
-â•‘  â“ <b>/riddle</b>
-â•‘  â”” Win coins with riddles!
-â•‘  
-â•‘  ðŸ’¬ <b>/ask [question]</b>
-â•‘  â”” Ask AI anything
-â•‘  
-â•‘  ðŸŽ® <b>/catch [name]</b>
-â•‘  â”” Catch appearing waifus!
-â•‘  
-â•š{'â•'*22}â•"""
+╔{'═'*22}╗
+║  🤖 <b>AI & FUN</b>
+╠{'═'*22}╣
+║  
+║  🎨 <b>/draw [prompt]</b>
+║  └ AI generates anime art
+║  
+║  🗣️ <b>/speak [text]</b>
+║  └ Anime voice synthesis
+║  
+║  🧠 <b>/chatbot</b>
+║  └ AI chat settings
+║  
+║  ❓ <b>/riddle</b>
+║  └ Win coins with riddles!
+║  
+║  💬 <b>/ask [question]</b>
+║  └ Ask AI anything
+║  
+║  🎮 <b>/catch [name]</b>
+║  └ Catch appearing waifus!
+║  
+╚{'═'*22}╝"""
 
     elif data == "help_group":
         text = f"""
-â•”{'â•'*22}â•—
-â•‘  âš™ï¸ <b>GROUP SETTINGS</b>
-â• {'â•'*22}â•£
-â•‘  
-â•‘  ðŸ‘‹ <b>/welcome on/off</b>
-â•‘  â”” Toggle welcome messages
-â•‘  
-â•‘  ðŸ“Š <b>/ping</b>
-â•‘  â”” Bot status & latency
-â•‘  
-â•‘  ðŸ“¦ <b>/claim</b>
-â•‘  â”” Claim group bonus ($2k)
-â•‘  â”” Requires 100+ members
-â•‘  
-â•š{'â•'*22}â•"""
+╔{'═'*22}╗
+║  ⚙️ <b>GROUP SETTINGS</b>
+╠{'═'*22}╣
+║  
+║  👋 <b>/welcome on/off</b>
+║  └ Toggle welcome messages
+║  
+║  📊 <b>/ping</b>
+║  └ Bot status & latency
+║  
+║  📦 <b>/claim</b>
+║  └ Claim group bonus ($2k)
+║  └ Requires 100+ members
+║  
+╚{'═'*22}╝"""
 
     elif data == "help_sudo":
         if query.from_user.id != OWNER_ID:
-            return await query.answer("âŒ Owner Only!", show_alert=True)
+            return await query.answer("❌ Owner Only!", show_alert=True)
         target_photo = SUDO_IMG
         text = f"""
-â•”{'â•'*22}â•—
-â•‘  ðŸ‘‘ <b>SUDO PANEL</b>
-â• {'â•'*22}â•£
-â•‘  
-â•‘  ðŸ’° <b>/addcoins [amt] @user</b>
-â•‘  ðŸ’¸ <b>/rmcoins [amt] @user</b>
-â•‘  âœ¨ <b>/freerevive @user</b>
-â•‘  ðŸ›¡ï¸ <b>/unprotect @user</b>
-â•‘  
-â•‘  ðŸ“¢ <b>/broadcast</b>
-â•‘  â”” -user / -group / -clean
-â•‘  
-â•‘  <b>Owner Only:</b>
-â•‘  ðŸ”„ <b>/update</b>
-â•‘  âž• <b>/addsudo @user</b>
-â•‘  âž– <b>/rmsudo @user</b>
-â•‘  ðŸ—‘ï¸ <b>/cleandb</b>
-â•‘  
-â•š{'â•'*22}â•"""
+╔{'═'*22}╗
+║  👑 <b>SUDO PANEL</b>
+╠{'═'*22}╣
+║  
+║  💰 <b>/addcoins [amt] @user</b>
+║  💸 <b>/rmcoins [amt] @user</b>
+║  ✨ <b>/freerevive @user</b>
+║  🛡️ <b>/unprotect @user</b>
+║  
+║  📢 <b>/broadcast</b>
+║  └ -user / -group / -clean
+║  
+║  <b>Owner Only:</b>
+║  🔄 <b>/update</b>
+║  ➕ <b>/addsudo @user</b>
+║  ➖ <b>/rmsudo @user</b>
+║  🗑️ <b>/cleandb</b>
+║  
+╚{'═'*22}╝"""
 
     try:
         await query.message.edit_media(
@@ -400,109 +400,109 @@ async def game_info_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
     
     info = {
         "game_kill_info": {
-            "title": "ðŸ”ª KILL",
+            "title": "🔪 KILL",
             "desc": """Murder another player for coins!
 
 <b>How it works:</b>
-â€¢ Reply to a user or use /kill @user
-â€¢ You earn 100-200 coins per kill
-â€¢ Weapons boost your earnings
-â€¢ Victim's flex items are burned!
+• Reply to a user or use /kill @user
+• You earn 100-200 coins per kill
+• Weapons boost your earnings
+• Victim's flex items are burned!
 
 <b>Tips:</b>
-â€¢ Buy weapons from /shop
-â€¢ Can't kill protected users
-â€¢ Dead users can't kill""",
+• Buy weapons from /shop
+• Can't kill protected users
+• Dead users can't kill""",
         },
         "game_rob_info": {
-            "title": "ðŸ’° ROB",
+            "title": "💰 ROB",
             "desc": """Steal coins from other players!
 
 <b>Usage:</b> /rob [amount] @user
 
 <b>How it works:</b>
-â€¢ Specify amount to steal
-â€¢ Armor can block robbery
-â€¢ No protection cooldown
+• Specify amount to steal
+• Armor can block robbery
+• No protection cooldown
 
 <b>Tips:</b>
-â€¢ Check target's balance first
-â€¢ Armor reduces success rate""",
+• Check target's balance first
+• Armor reduces success rate""",
         },
         "game_dice_info": {
-            "title": "ðŸŽ² DICE",
+            "title": "🎲 DICE",
             "desc": """Roll the dice to win coins!
 
 <b>Usage:</b> /dice [amount]
 
 <b>Rules:</b>
-â€¢ Roll 4, 5, 6 = WIN (2x)
-â€¢ Roll 1, 2, 3 = LOSE
-â€¢ Min bet: $50
+• Roll 4, 5, 6 = WIN (2x)
+• Roll 1, 2, 3 = LOSE
+• Min bet: $50
 
 <b>Tips:</b>
-â€¢ 50% win chance
-â€¢ Double your money!""",
+• 50% win chance
+• Double your money!""",
         },
         "game_slots_info": {
-            "title": "ðŸŽ° SLOTS",
+            "title": "🎰 SLOTS",
             "desc": """Spin the slot machine!
 
 <b>Usage:</b> /slots
 
 <b>Payouts:</b>
-â€¢ 777 = JACKPOT (10x)
-â€¢ 3 matching = WIN (3x)
-â€¢ Others = LOSE
+• 777 = JACKPOT (10x)
+• 3 matching = WIN (3x)
+• Others = LOSE
 
 <b>Cost:</b> $100 per spin""",
         },
         "game_protect_info": {
-            "title": "ðŸ›¡ï¸ PROTECT",
+            "title": "🛡️ PROTECT",
             "desc": """Buy protection from attacks!
 
 <b>Usage:</b> /protect 1d or /protect 2d
 
 <b>Prices:</b>
-â€¢ 1 Day: $1,000
-â€¢ 2 Days: $1,800
+• 1 Day: $1,000
+• 2 Days: $1,800
 
 <b>Perks:</b>
-â€¢ Blocks kill & rob
-â€¢ Protects your partner too!""",
+• Blocks kill & rob
+• Protects your partner too!""",
         },
         "game_duel_info": {
-            "title": "âš”ï¸ DUEL",
+            "title": "⚔️ DUEL",
             "desc": """Challenge a user to PvP!
 
 <b>Usage:</b> /duel [bet] @user
 
 <b>How it works:</b>
-â€¢ Winner takes the pot!
-â€¢ Opponent must accept.
-â€¢ Min bet: 100 coins.""",
+• Winner takes the pot!
+• Opponent must accept.
+• Min bet: 100 coins.""",
         },
         "game_lottery_info": {
-            "title": "ðŸŽ° LOTTERY",
+            "title": "🎰 LOTTERY",
             "desc": """Try your luck in the lottery!
 
 <b>Usage:</b> /lottery
 
 <b>How it works:</b>
-â€¢ Ticket cost: 500 coins.
-â€¢ 10% chance to win.
-â€¢ Jackpot: Up to 10k!""",
+• Ticket cost: 500 coins.
+• 10% chance to win.
+• Jackpot: Up to 10k!""",
         },
     }
     
     game = info.get(data, {"title": "Unknown", "desc": "Game not found"})
     
     text = f"""
-â•”{'â•'*22}â•—
-â•‘  {game['title']}
-â• {'â•'*22}â•£
+╔{'═'*22}╗
+║  {game['title']}
+╠{'═'*22}╣
 {game['desc']}
-â•š{'â•'*22}â•"""
+╚{'═'*22}╝"""
     
     kb = InlineKeyboardMarkup([
         [Buttons.back("menu_games")],
@@ -530,20 +530,20 @@ async def quick_action_callback(update: Update, context: ContextTypes.DEFAULT_TY
         status = user.get("status", "alive")
         
         text = f"""
-â•”{'â•'*22}â•—
-â•‘  ðŸ’° <b>YOUR WALLET</b>
-â• {'â•'*22}â•£
-â•‘  
-â•‘  ðŸ’µ Balance: <code>{format_money(balance)}</code>
-â•‘  âš”ï¸ Kills: <code>{kills}</code>
-â•‘  ðŸ“Š Status: <code>{status.title()}</code>
-â•‘  
-â•š{'â•'*22}â•
+╔{'═'*22}╗
+║  💰 <b>YOUR WALLET</b>
+╠{'═'*22}╣
+║  
+║  💵 Balance: <code>{format_money(balance)}</code>
+║  ⚔️ Kills: <code>{kills}</code>
+║  📊 Status: <code>{status.title()}</code>
+║  
+╚{'═'*22}╝
 
 <i>Use /bal for full details!</i>"""
         
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("ðŸ“¦ ÉªÉ´á´ á´‡É´á´›á´Ê€Ê", callback_data="inv_view")],
+            [InlineKeyboardButton("📦 Inventory", callback_data="inv_view")],
             [Buttons.back("return_start")],
         ])
         
@@ -554,7 +554,7 @@ async def quick_action_callback(update: Update, context: ContextTypes.DEFAULT_TY
     
     elif data == "quick_daily":
         await query.message.reply_text(
-            "ðŸŽ <b>Daily Reward</b>\n\n<i>Use /daily command to claim!</i>",
+            "🎁 <b>Daily Reward</b>\n\n<i>Use /daily command to claim!</i>",
             parse_mode=ParseMode.HTML
         )
     
@@ -562,19 +562,19 @@ async def quick_action_callback(update: Update, context: ContextTypes.DEFAULT_TY
         top_users = list(users_collection.find().sort("balance", -1).limit(10))
         
         ranking_text = ""
-        medals = {0: "ðŸ¥‡", 1: "ðŸ¥ˆ", 2: "ðŸ¥‰"}
+        medals = {0: "🥇", 1: "🥈", 2: "🥉"}
         
         for i, u in enumerate(top_users):
             medal = medals.get(i, f"#{i+1}")
             name = u.get("first_name", "Unknown")[:15]
             bal = format_money(u.get("balance", 0))
-            ranking_text += f"â•‘  {medal} {name}: {bal}\n"
+            ranking_text += f"║  {medal} {name}: {bal}\n"
         
         text = f"""
-â•”{'â•'*22}â•—
-â•‘  ðŸ† <b>TOP 10 RICHEST</b>
-â• {'â•'*22}â•£
-{ranking_text}â•š{'â•'*22}â•"""
+╔{'═'*22}╗
+║  🏆 <b>TOP 10 RICHEST</b>
+╠{'═'*22}╣
+{ranking_text}╚{'═'*22}╝"""
         
         kb = InlineKeyboardMarkup([[Buttons.back("return_start")]])
         
@@ -582,4 +582,3 @@ async def quick_action_callback(update: Update, context: ContextTypes.DEFAULT_TY
             await query.message.edit_caption(caption=text, parse_mode=ParseMode.HTML, reply_markup=kb)
         except:
             await query.message.edit_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
-

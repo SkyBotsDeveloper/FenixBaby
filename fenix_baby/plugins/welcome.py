@@ -20,72 +20,127 @@
 # Contact: https://t.me/llFenixxll
 
 import random
-from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
+
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram.constants import ChatType, ParseMode
 from telegram.ext import ContextTypes
-from telegram.constants import ParseMode, ChatType
+
+from fenix_baby.config import BOT_NAME, SUPPORT_GROUP, WELCOME_IMG_URL
 from fenix_baby.database import groups_collection
-from fenix_baby.utils import get_mention, ensure_user_exists
-from fenix_baby.config import WELCOME_IMG_URL, BOT_NAME, START_IMG_URL, SUPPORT_GROUP
+from fenix_baby.utils import ensure_user_exists, get_mention
+
 
 async def welcome_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Enable/Disable Welcomes."""
+    """Enable or disable welcome messages in groups."""
     chat = update.effective_chat
     user = update.effective_user
     args = context.args
-    
+
     if chat.type == ChatType.PRIVATE:
-        return await update.message.reply_text("ðŸ¼ <b>á´›ÊœÉªs á´„ÏƒÏ»Ï»á´§Î·á´… á´¡Ïƒê›á´‹s ÉªÎ· É¢ê›á´˜ ÏƒÎ·ÊŸÊ Ê™á´§Ê™Ê!</b>", parse_mode=ParseMode.HTML)
-    
+        return await update.message.reply_text(
+            "🍼 <b>This command works in groups only.</b>",
+            parse_mode=ParseMode.HTML,
+        )
+
     member = await chat.get_member(user.id)
-    if member.status not in ['administrator', 'creator']:
-        return await update.message.reply_text("âŒ <b>á´§á´…Ï»ÉªÎ· ÏƒÎ·ÊŸÊ!</b>", parse_mode=ParseMode.HTML)
+    if member.status not in ["administrator", "creator"]:
+        return await update.message.reply_text(
+            "❌ <b>Admins only.</b>",
+            parse_mode=ParseMode.HTML,
+        )
 
     if not args:
-        return await update.message.reply_text("âš ï¸ <b>Usage:</b> <code>/welcome on</code> or <code>off</code>", parse_mode=ParseMode.HTML)
-    
+        return await update.message.reply_text(
+            "⚠️ <b>Usage:</b> <code>/welcome on</code> or <code>/welcome off</code>",
+            parse_mode=ParseMode.HTML,
+        )
+
     state = args[0].lower()
-    if state in ['on', 'enable', 'yes']:
-        groups_collection.update_one({"chat_id": chat.id}, {"$set": {"welcome_enabled": True}}, upsert=True)
-        await update.message.reply_text("âœ… <b>á´¡Ñ”ÊŸá´„ÏƒÏ»Ñ” Ï»Ñ”ssá´§É¢Ñ” Ñ”Î·á´§Ê™ÊŸÑ”á´…!</b>", parse_mode=ParseMode.HTML)
-    elif state in ['off', 'disable', 'no']:
-        groups_collection.update_one({"chat_id": chat.id}, {"$set": {"welcome_enabled": False}}, upsert=True)
-        await update.message.reply_text("âŒ <b>á´¡Ñ”ÊŸá´„ÏƒÏ»Ñ” Ï»Ñ”ssá´§É¢Ñ” á´…Éªsá´§Ê™ÊŸÑ”á´…!</b>", parse_mode=ParseMode.HTML)
+    if state in ["on", "enable", "yes"]:
+        groups_collection.update_one(
+            {"chat_id": chat.id},
+            {"$set": {"welcome_enabled": True}},
+            upsert=True,
+        )
+        await update.message.reply_text(
+            "✅ <b>Welcome messages enabled.</b>",
+            parse_mode=ParseMode.HTML,
+        )
+    elif state in ["off", "disable", "no"]:
+        groups_collection.update_one(
+            {"chat_id": chat.id},
+            {"$set": {"welcome_enabled": False}},
+            upsert=True,
+        )
+        await update.message.reply_text(
+            "❌ <b>Welcome messages disabled.</b>",
+            parse_mode=ParseMode.HTML,
+        )
     else:
-        await update.message.reply_text("âš ï¸ Invalid option. Use <code>on</code> or <code>off</code>.", parse_mode=ParseMode.HTML)
+        await update.message.reply_text(
+            "⚠️ Invalid option. Use <code>on</code> or <code>off</code>.",
+            parse_mode=ParseMode.HTML,
+        )
+
 
 async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat = update.effective_chat
-    
+
     for member in update.message.new_chat_members:
-        # --- ðŸ¤– BOT ADDED TO GROUP ---
         if member.id == context.bot.id:
             adder = update.message.from_user
             ensure_user_exists(adder)
-            
-            groups_collection.update_one({"chat_id": chat.id}, {"$set": {"welcome_enabled": True, "title": chat.title}}, upsert=True)
-            
-            txt = (
-                f"ðŸŒ¸á´›Êœá´§Î·x Ò“Ïƒê› á´§á´…á´…ÉªÎ·É¢<b>ðŸ’« {get_mention(adder)}!</b>\n\n"
-                f"ðŸ“¢ Ò“Ïƒê› á´§á´…á´…ÉªÎ·É¢ <b>{chat.title}</b>! âœ¨\n\n"
-                f"ðŸŽ <b>Ò’Éªê›sá´› á´›ÉªÏ»Ñ” Ê™ÏƒÎ·Ï…s:</b>\n"
-                f"Type <code>/claim</code> fast to get 2,000 Coins!\n"
-                f"(Only the first person gets it!)"
+
+            groups_collection.update_one(
+                {"chat_id": chat.id},
+                {"$set": {"welcome_enabled": True, "title": chat.title}},
+                upsert=True,
             )
-            kb = InlineKeyboardMarkup([[InlineKeyboardButton("ðŸ’¬ sÏ…á´˜á´˜Ïƒê›á´›", url=SUPPORT_GROUP)]]) if SUPPORT_GROUP else None
-            
-            # Use Welcome Image (gyi5iu.jpg) for this interaction
-            try: await update.message.reply_photo(WELCOME_IMG_URL, caption=txt, parse_mode=ParseMode.HTML, reply_markup=kb)
-            except: await update.message.reply_text(txt, parse_mode=ParseMode.HTML, reply_markup=kb)
 
-        # --- ðŸ‘¤ USER JOINED GROUP ---
-        else:
-            ensure_user_exists(member)
-            group_data = groups_collection.find_one({"chat_id": chat.id})
-            
-            if group_data and group_data.get("welcome_enabled"):
-                greetings = ["ÊœÑ”ÊŸÊŸÏƒ", "ÊœÉªÉªÉª", "á´¡Ñ”ÊŸá´„ÏƒÏ»Ñ”", "É¢ê›ÏƒÏ…á´˜ Ï»Ñ” sá´¡á´§É¢á´§á´› Êœá´§Éª"]
-                greet = random.choice(greetings)
-                txt = f"ðŸ’ž <b>{greet} {get_mention(member)}!</b>\n\ná´¡Ñ”ÊŸá´„ÏƒÏ»Ñ” á´›Ïƒ <b>{chat.title}</b> ðŸŒ¸\nDon't forget to /register!"
-                try: await update.message.reply_photo(WELCOME_IMG_URL, caption=txt, parse_mode=ParseMode.HTML)
-                except: await update.message.reply_text(txt, parse_mode=ParseMode.HTML)
+            text = (
+                f"🌸 <b>Thanks for adding {BOT_NAME}!</b>\n\n"
+                f"💫 Added by: {get_mention(adder)}\n"
+                f"📢 Group: <b>{chat.title}</b>\n\n"
+                f"🎁 <b>First claim bonus:</b>\n"
+                f"Use <code>/claim</code> quickly to grab 2,000 coins.\n"
+                f"<i>Only the first person gets it.</i>"
+            )
+            keyboard = None
+            if SUPPORT_GROUP:
+                keyboard = InlineKeyboardMarkup(
+                    [[InlineKeyboardButton("💬 Support", url=SUPPORT_GROUP)]]
+                )
 
+            try:
+                await update.message.reply_photo(
+                    WELCOME_IMG_URL,
+                    caption=text,
+                    parse_mode=ParseMode.HTML,
+                    reply_markup=keyboard,
+                )
+            except Exception:
+                await update.message.reply_text(
+                    text,
+                    parse_mode=ParseMode.HTML,
+                    reply_markup=keyboard,
+                )
+            continue
+
+        ensure_user_exists(member)
+        group_data = groups_collection.find_one({"chat_id": chat.id})
+
+        if group_data and group_data.get("welcome_enabled"):
+            greeting = random.choice(["Hello", "Hey", "Welcome", "Glad you're here"])
+            text = (
+                f"💞 <b>{greeting}, {get_mention(member)}!</b>\n\n"
+                f"Welcome to <b>{chat.title}</b> 🌸\n"
+                "Don't forget to /register."
+            )
+            try:
+                await update.message.reply_photo(
+                    WELCOME_IMG_URL,
+                    caption=text,
+                    parse_mode=ParseMode.HTML,
+                )
+            except Exception:
+                await update.message.reply_text(text, parse_mode=ParseMode.HTML)
