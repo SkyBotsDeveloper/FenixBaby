@@ -1,0 +1,34 @@
+{
+  "name": "Fenix Baby",
+  "description": "The Ultimate Aesthetic Telegram Economy & Game Bot.",
+  "logo": "https://telegra.ph/file/5e5480760e412bd402e88.jpg",
+  "keywords": [
+    "telegram", "bot", "python", "economy", "game", "ai"
+  ],
+  "repository": "https://github.com/SkyBotsDeveloper/FenixBaby",
+  "env": {
+    "BOT_TOKEN": { "description": "Telegram Bot Token", "required": true },
+    "MONGO_URI": { "description": "MongoDB Connection String", "required": true },
+    "OWNER_ID": { "description": "Your User ID", "required": true },
+    "MONGO_DB_NAME": { "description": "MongoDB Database Name", "value": "fenix_baby_db", "required": false },
+    "ELITE_LLM_API_KEY": { "description": "API key for your Elite LLMs Heroku endpoint", "required": true },
+    "ELITE_LLM_BASE_URL": { "description": "OpenAI-compatible base URL", "value": "https://elite-llms-pro-042f44b0a301.herokuapp.com/v1", "required": true },
+    "ELITE_LLM_MODEL": { "description": "Primary chat model", "value": "gpt-5-mini", "required": false },
+    "ELITE_LLM_UTILITY_MODEL": { "description": "Fast utility model", "value": "gpt-4o-mini", "required": false },
+    "LOGGER_ID": { "description": "Log Channel ID", "required": false },
+    "START_IMG_URL": { "description": "Start Image URL", "required": false },
+    "SUPPORT_GROUP": { "description": "Support Link", "value": "https://t.me/FenixMusicSupport", "required": false },
+    "SUPPORT_CHANNEL": { "description": "Updates Link", "value": "https://t.me/FenixMusicSupport", "required": false },
+    "OWNER_LINK": { "description": "Owner Link", "value": "https://t.me/llFenixxll", "required": false },
+    "OWNER_HANDLE": { "description": "Owner Telegram handle", "value": "@llFenixxll", "required": false },
+    "UPSTREAM_REPO": { "description": "Git Repo URL", "value": "https://github.com/SkyBotsDeveloper/FenixBaby", "required": false },
+    "GIT_TOKEN": { "description": "Git Token", "required": false },
+    "GIT_PYTHON_REFRESH": { "value": "quiet", "required": true }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "stack": "heroku-24"
+}
