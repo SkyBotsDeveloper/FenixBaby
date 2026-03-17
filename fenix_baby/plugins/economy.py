@@ -81,7 +81,7 @@ async def register(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.effective_message.reply_text(
         f"🎉 <b>Yayy!</b> {get_mention(user)} Registered!\n"
         f"🎁 <b>Welcome Bonus:</b> <code>+{format_money(REGISTER_BONUS)}</code>\n"
-        f"ℹ️ <i>Use /help to learn how to play!</i>", 
+        f"Info: <i>Use /help to learn how to play!</i>", 
         parse_mode=ParseMode.HTML
     )
 
@@ -257,4 +257,3 @@ async def give(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "action": f"Transferred {format_money(amount)} to {get_mention(target)} (Tax: {tax_type})",
         "chat": "Economy System"
     })
-
